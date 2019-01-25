@@ -183,9 +183,6 @@ $ echo "\
 Some of the following ip addresses might need to be adjusted based on your docker container ip addresses that were assigned.
 
 ```
-$ echo "\
-guacd-hostname: 172.17.0.2
-guacd-port: 4822
 mysql-hostname: 172.17.0.3
 mysql-port: 3306
 mysql-database: guacamole_db
@@ -197,17 +194,28 @@ ldap-encryption-method: ssl
 
 ldap-user-base-dn: dc=ad,dc=siu,dc=edu
 ldap-username-attribute: sAMAccountName
+
 # Uncomment your line and update your dawg tag
-#ldap-search-bind-dn: cn=Ldap Query2,ou=Users,ou=CS,ou=COS,ou=Academic Affairs,dc=ad,dc=siu,dc=edu
-#ldap-search-bind-dn: cn=Mark R Beussink-SIU853249208,ou=Student,ou=Roles,ou=IDM,dc=ad,dc=siu,dc=edu
+
+#ldap-search-bind-dn: cn=Ldap Query2,ou=Users,ou=CS,ou=COS,ou=Academic
+Affairs,dc=ad,dc=siu,dc=edu
+#ldap-search-bind-dn: cn=Andrew M Cowden-
+SIU85XXXXXXX,ou=Student,ou=Roles,ou=IDM,dc=ad,dc=siu,dc=edu
+#ldap-search-bind-dn: cn=Mark R Beussink-
+SIU85XXXXXXX,ou=Student,ou=Roles,ou=IDM,dc=ad,dc=siu,dc=edu
+#ldap-search-bind-dn: cn=Edward J Byrne-
+SIU85XXXXXXX,ou=Student,ou=Roles,ou=IDM,dc=ad,dc=siu,dc=edu
+#ldap-search-bind-dn: cn=Justin M Sieling-
+SIU85XXXXXXX,ou=Student,ou=Roles,ou=IDM,dc=ad,dc=siu,dc=edu
+
 # Put your sso password in the line below
-ldap-search-bind-password: I am the captain of my soul!
+ldap-search-bind-password: plain_text_passwd_here
 
 ldap-follow-referrals: false
 ldap-user-search-filter: (objectClass=user)
 ldap-operation-timeout: 180
 ldap-max-search-results: 30000
-ldap-max-referral-hops: 20" > ~/guacamole/test/guacamole.properties 
+ldap-max-referral-hops: 20" > ~/guacamole/test/guacamole.properties
 ```
 
 ## Run the container
