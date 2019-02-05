@@ -233,7 +233,7 @@ MYSQL_HOSTNAME=some_mysql \
 -e LDAP_HOSTNAME=ad.siu.edu -e \
 "LDAP_USER_BASE_DN=dc=ad,dc=siu,dc=edu" \
 -e "EXTENSIONS=auth-ldap" \
--v /home/admin/guacamole/test:/home/admin/guacamole/test -e GUACAMOLE_HOME=/home/admin/guacamole/test -p 8080:8080 mbeussink-test/guacamole
+-v /home/admin/guacamole/test:/home/admin/guacamole/test -e GUACAMOLE_HOME=/home/admin/guacamole/test -p 8080:8080 mbarkdoll-test/guacamole
 ```
 
 # Remove old container
