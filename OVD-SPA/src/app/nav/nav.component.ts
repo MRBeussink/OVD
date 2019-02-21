@@ -14,6 +14,10 @@ export class NavComponent implements OnInit {
   }
 
   login() {
-    console.log
+    if (this.model.username === 'thatGuy') {
+      console.log('Congrats');
+    } else {
+      console.log('nope');
+    }
   }
 }
