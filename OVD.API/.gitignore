@@ -3,6 +3,8 @@ bin
 obj
 *.db
 
+appsettings.json.secret
+
 # IDEs and editors
 /.idea
 .project
