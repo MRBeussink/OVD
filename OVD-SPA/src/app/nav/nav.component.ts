@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { NavAuthService } from './navauth.service';
 
 @Component({
   selector: 'app-nav',
@@ -8,16 +10,29 @@ import { Component, OnInit } from '@angular/core';
 export class NavComponent implements OnInit {
   model: any = {};
 
-  constructor() { }
+ constructor(private authService: NavAuthService) { }
 
   ngOnInit() {
   }
 
   login() {
-    if (this.model.username === 'thatGuy') {
-      console.log('Congrats');
-    } else {
-      console.log('nope');
+    // if (this.model.username === 'thatGuy') {
+      this.authService.login(this.model).subscribe(next => {
+        console.log('Congrats');
+      }, error => {
+        console.log('Failed to login');
+      });
+    // } else {
+    //   console.log('nope');
     }
+  // }
+
+  loggedIn() {
+    const token = 'true';
+    return !!token;
+  }
+
+  logout() {
+    console.log('logged out');
   }
 }
