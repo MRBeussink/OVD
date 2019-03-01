@@ -25,9 +25,12 @@ login(model: any) {
 }
 
 loggedIn() {
-  return false;
-  // const token = localStorage.getItem('token');
-  // return !this.jwtHelper.isToken.isTokenExpired(token);
+  const token = localStorage.getItem('token');
+  return !!token;
+}
+
+logout() {
+  localStorage.removeItem('token');
 }
 
 }

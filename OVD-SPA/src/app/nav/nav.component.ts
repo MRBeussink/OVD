@@ -38,4 +38,8 @@ export class NavComponent implements OnInit {
   isAdmin() {
     return this.loggedIn();
   }
+
+  logout() {
+    this.authService.logout();
+  }
 }
