@@ -5,6 +5,7 @@ import { BsDropdownModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from './_services/auth.service';
 
 @NgModule({
    declarations: [
@@ -16,7 +17,9 @@ import { FormsModule } from '@angular/forms';
       FormsModule,
       BsDropdownModule.forRoot()
    ],
-   providers: [],
+   providers: [
+      AuthService
+   ],
    bootstrap: [
       AppComponent
    ]

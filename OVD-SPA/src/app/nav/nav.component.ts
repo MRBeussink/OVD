@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../_services/auth.service';
 
 @Component({
   selector: 'app-nav',
@@ -9,25 +10,29 @@ export class NavComponent implements OnInit {
   // Grab input
   model: any = {};
 
+  constructor(public authService: AuthService) { }
+
   // Nothing to do on init
   ngOnInit() {}
 
-  // If the username is name then fake a login
+  // Pass the credentials to the api to attempt a login
   login() {
-    if (this.model.username === 'name') {
-      console.log('Congrats');
-    } else {
-      console.log('nope');
-    }
+    this.authService.login(this.model).subscribe(next => {
+      // What to do when successful
+    }, error => {
+      // What to do on error
+    }, () => {
+      // Where to take the user after
+    });
   }
 
-  // Lets just hardcode where we are
+  // Check the api to see if the user is logged in
   loggedIn() {
-    return true;
+    return this.authService.loggedIn();
   }
 
-  // Lets hardcode whether we're admin
+  // Since there are no normal users yet, just check if logged in
   isAdmin() {
-    return false;
+    return this.loggedIn();
   }
 }
