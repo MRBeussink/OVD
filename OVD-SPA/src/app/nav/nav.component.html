@@ -17,12 +17,12 @@
       </li>
     </ul>
 
-  <div *ngIf="loggedIn()" class="dropdown" >
+  <div *ngIf="loggedIn()" class="dropdown" dropdown >
     <a class="dropdown-toggle text-light" dropdownToggle>
       Welcome User
     </a>
 
-    <div class="dropdown-menu" *dropdownMenu>
+    <div class="dropdown-menu mt-3" *dropdownMenu>
       <a class="dropdown-item" href="#">
         <i class="fa fa-sign-out"></i>Logout</a>
     </div>

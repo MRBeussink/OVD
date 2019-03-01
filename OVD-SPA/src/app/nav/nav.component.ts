@@ -28,6 +28,6 @@ export class NavComponent implements OnInit {
 
   // Lets hardcode whether we're admin
   isAdmin() {
-    return true;
+    return false;
   }
 }
