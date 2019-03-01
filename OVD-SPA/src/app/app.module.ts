@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BsDropdownModule } from 'ngx-bootstrap';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -15,6 +16,7 @@ import { AuthService } from './_services/auth.service';
    imports: [
       BrowserModule,
       FormsModule,
+      HttpClientModule,
       BsDropdownModule.forRoot()
    ],
    providers: [
