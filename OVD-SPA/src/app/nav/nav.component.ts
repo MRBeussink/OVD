@@ -25,6 +25,7 @@ export class NavComponent implements OnInit {
       console.log('error');
     }, () => {
       // Where to take the user after
+      console.log('logged in');
     });
   }
 
