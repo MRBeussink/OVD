@@ -23,11 +23,11 @@ export class NavComponent implements OnInit {
 
   // Lets just hardcode where we are
   loggedIn() {
-    return false;
+    return true;
   }
 
   // Lets hardcode whether we're admin
   isAdmin() {
-    return false;
+    return true;
   }
 }
