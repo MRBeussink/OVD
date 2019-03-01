@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -7,6 +8,8 @@ import { map } from 'rxjs/operators';
 })
 export class AuthService {
   baseUrl = 'http://localhost:5000/api/auth/';
+  jwtHelper = new JwtHelperService();
+  decodedToken: any;
 
 constructor(private http: HttpClient) { }
 
@@ -19,6 +22,7 @@ login(model: any) {
       // If there was a token, save it
       if (user) {
         localStorage.setItem('token', user.token);
+        this.decodedToken = this.jwtHelper.decodeToken(user.token);
       }
     })
   );
@@ -32,5 +36,6 @@ loggedIn() {
 logout() {
   localStorage.removeItem('token');
 }
+
 
 }
