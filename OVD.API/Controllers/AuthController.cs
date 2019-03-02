@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -55,16 +56,52 @@ namespace OVD.API.Controllers
             // Check if dawgtag or not
             // SIU85[0-9]{7}
 
-            var adminFromRepo = await _repo
-                .Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            Claim idClaim;
+            Claim nameClaim;
+            Claim roleClaim;
 
-            if (adminFromRepo == null)
-                return Unauthorized();
+            Regex dawgtagRx = new Regex("siu85[0-9]{7}", RegexOptions.Compiled);
 
-            var claims = new[]
+
+            if (dawgtagRx.IsMatch(userForLoginDto.Username))
             {
-                new Claim(ClaimTypes.NameIdentifier, adminFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, adminFromRepo.Username)
+                // LDAP login
+                LdapAuth ldapAuth = new LdapAuth();
+
+                // Validate user via LDAP
+                var valid = ldapAuth.validateUser(userForLoginDto);
+
+                // if invalid
+                if (!valid)
+                    return Unauthorized();
+
+                // Assign security claims
+                idClaim = new Claim(ClaimTypes.NameIdentifier, userForLoginDto.Username);
+                nameClaim = new Claim(ClaimTypes.Name, userForLoginDto.Username);
+                roleClaim = new Claim(ClaimTypes.Role, "standard");
+            }
+
+            else 
+            {   
+                // Admin login
+
+                var adminFromRepo = await _repo
+                    .Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+
+                if (adminFromRepo == null)
+                    return Unauthorized();
+
+                
+                idClaim = new Claim(ClaimTypes.NameIdentifier, adminFromRepo.Id.ToString());
+                nameClaim = new Claim(ClaimTypes.Name, adminFromRepo.Username);
+                roleClaim = new Claim(ClaimTypes.Role, "admin");
+            }
+
+            var claims = new [] 
+            {
+                idClaim,
+                nameClaim,
+                roleClaim
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8
@@ -78,7 +115,7 @@ namespace OVD.API.Controllers
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds
             };
-
+            
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
