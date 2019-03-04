@@ -1,19 +1,19 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark bg-primary">
   <div class="container">
-    <a class="navbar-brand" href="#">OVD</a>
+    <a class="navbar-brand" [routerLink]="['/dashboard']">OVD</a>
 
     <ul *ngIf="isAdmin()" class="navbar-nav mr-auto" >
-      <li class="nav-item">
-        <a class="nav-link" href="#">Dashboard</a>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/dashboard']">Dashboard</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Groups</a>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/groups']">Groups</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Sessions</a>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/sessions']">Sessions</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Settings</a>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/settings']">Settings</a>
       </li>
     </ul>
 
