@@ -1,10 +1,8 @@
 using System;
-using test_OVD_clientless.Script_Executors;
-using test_OVD_clientless.Guacamole_Connector;
 
-namespace test_OVD_clientless.Validators
+namespace test_OVD_clientless.Helpers
 {
-    public class Group_Validator
+    public class Validator
     {
 
         /// <summary> 
@@ -23,12 +21,12 @@ namespace test_OVD_clientless.Validators
         /// Validates the name of the group ensuring that the provided group
         /// name is not taken and is in the proper format. 
         /// </summary>
-        /// <returns><c>true</c>, if group name was validated, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c>, if group name was found, <c>false</c> otherwise.</returns>
         /// <param name="groupName">The name of the group to validate.</param>
         public bool validateGroupName(string groupName) 
         {
             GuacamoleDatabaseConnector dbc = new GuacamoleDatabaseConnector();
-            return !dbc.searchGroupName(groupName);
+            return dbc.searchGroupName(groupName);
         }
 
         /// <summary>

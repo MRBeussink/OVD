@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace test_OVD_clientless.Script_Executors
+namespace test_OVD_clientless.Helpers
 {
     public class ScriptExecutor
     {
