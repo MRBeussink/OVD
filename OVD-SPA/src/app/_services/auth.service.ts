@@ -19,11 +19,10 @@ login(model: any) {
     // Grab the token that was returned if the login was successful
     map((response: any) => {
       const user = response;
-      // If there was a token, save it
+      // If there was a token, save it and decode it
       if (user) {
         localStorage.setItem('token', user.token);
         this.decodedToken = this.jwtHelper.decodeToken(user.token);
-        console.log(this.decodedToken);
       }
     })
   );

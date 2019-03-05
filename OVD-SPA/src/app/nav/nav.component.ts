@@ -21,13 +21,10 @@ export class NavComponent implements OnInit {
   // The redirects if successful
   login() {
     this.authService.login(this.model).subscribe(next => { // What to do when successful
-      console.log('success');
 
     }, error => { // What to do on error
-      console.log('error');
 
     }, () => { // What to do after success
-      console.log('logged in');
       // Admins go to dashboard, users to user page
       if (this.isAdmin()) {
         this.router.navigate(['/dashboard']);
