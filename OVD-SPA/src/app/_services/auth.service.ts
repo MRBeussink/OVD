@@ -23,6 +23,7 @@ login(model: any) {
       if (user) {
         localStorage.setItem('token', user.token);
         this.decodedToken = this.jwtHelper.decodeToken(user.token);
+        console.log(this.decodedToken);
       }
     })
   );
@@ -30,7 +31,7 @@ login(model: any) {
 
 loggedIn() {
   const token = localStorage.getItem('token');
-  return !!token;
+  return !this.jwtHelper.isTokenExpired(token);
 }
 
 logout() {
