@@ -13,6 +13,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { appRoutes } from './routes';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './_guards/auth.guard';
+import { SessionsComponent } from './sessions/sessions.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
    declarations: [
@@ -20,7 +22,9 @@ import { AuthGuard } from './_guards/auth.guard';
       NavComponent,
       GroupsComponent,
       DashboardComponent,
-      HomeComponent
+      HomeComponent,
+      SessionsComponent,
+      SettingsComponent
    ],
    imports: [
       BrowserModule,
