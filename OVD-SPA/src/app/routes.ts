@@ -5,9 +5,11 @@ import { GroupsComponent } from './groups/groups.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { SessionsComponent } from './sessions/sessions.component';
 import { SettingsComponent } from './settings/settings.component';
+import { UserComponent } from './user/user.component';
 
 export const appRoutes: Routes = [
-    { path: '', component: HomeComponent },
+    { path: '', component: UserComponent },
+    { path: 'login', component: HomeComponent },
     {
         path: '',
         runGuardsAndResolvers: 'always',

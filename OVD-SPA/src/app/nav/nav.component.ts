@@ -29,7 +29,7 @@ export class NavComponent implements OnInit {
       if (this.isAdmin()) {
         this.router.navigate(['/dashboard']);
       } else {
-        this.router.navigate(['/user']);
+        this.router.navigate(['']);
       }
     });
   }
@@ -39,9 +39,9 @@ export class NavComponent implements OnInit {
     return this.authService.loggedIn();
   }
 
-  // Since there are no normal users yet, just check if logged in
+  // Check the api to see if the user is an admin
   isAdmin() {
-    return this.loggedIn();
+    return this.authService.isAdmin();
   }
 
   // Deletes user's token and redirects to home page

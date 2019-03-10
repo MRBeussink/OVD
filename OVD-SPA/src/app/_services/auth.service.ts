@@ -33,6 +33,13 @@ loggedIn() {
   return !this.jwtHelper.isTokenExpired(token);
 }
 
+isAdmin() {
+  if (this.decodedToken && this.decodedToken.role === 'admin') {
+    return true;
+  }
+  return false;
+}
+
 logout() {
   localStorage.removeItem('token');
 }
