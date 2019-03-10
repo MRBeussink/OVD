@@ -1,3 +1,7 @@
 .container {
     max-width: 3000px;
 }
+
+.dropdown-toggle, .dropdown-item {
+    cursor: pointer;
+}

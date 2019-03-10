@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../_services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -9,25 +11,42 @@ export class NavComponent implements OnInit {
   // Grab input
   model: any = {};
 
+  // Load in the auth service for logging in and router for redirects
+  constructor(public authService: AuthService, private router: Router) { }
+
   // Nothing to do on init
   ngOnInit() {}
 
-  // If the username is name then fake a login
+  // Pass the credentials to the api to attempt a login
+  // The redirects if successful
   login() {
-    if (this.model.username === 'name') {
-      console.log('Congrats');
-    } else {
-      console.log('nope');
-    }
+    this.authService.login(this.model).subscribe(next => { // What to do when successful
+
+    }, error => { // What to do on error
+
+    }, () => { // What to do after success
+      // Admins go to dashboard, users to user page
+      if (this.isAdmin()) {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.router.navigate(['/user']);
+      }
+    });
   }
 
-  // Lets just hardcode where we are
+  // Check the api to see if the user is logged in
   loggedIn() {
-    return true;
+    return this.authService.loggedIn();
   }
 
-  // Lets hardcode whether we're admin
+  // Since there are no normal users yet, just check if logged in
   isAdmin() {
-    return false;
+    return this.loggedIn();
+  }
+
+  // Deletes user's token and redirects to home page
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/home']);
   }
 }
