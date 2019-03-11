@@ -15,7 +15,7 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if group was inserted, <c>false</c> otherwise.</returns>
         /// <param name="newGroup">Group Object.</param>
-        public bool insertGroup(Group newGroup)
+        public bool insertGroup(GroupConfig newGroup)
         {
             try
             {
@@ -27,8 +27,8 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
                     gdbc.getConnection());
 
                 query.Prepare();
-                query.Parameters.AddWithValue("@groupname", newGroup.name);
-                query.Parameters.AddWithValue("@maxconnections", newGroup.config.maxNum);
+                query.Parameters.AddWithValue("@groupname", newGroup.groupName);
+                query.Parameters.AddWithValue("@maxconnections", newGroup.maxNum);
                 query.Parameters.AddWithValue("@maxuserconnections", MAX_USER_CONNECTIONS);
 
                 int rowsEffected = query.ExecuteNonQuery();

@@ -14,17 +14,8 @@ namespace test_OVD_clientless.Helpers
         public string formatVmName(String vmName)
         {
             GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
-
-            //Setup vmName to be have the starting number 0
-            formatName(vmName);
-            vmName += "_0";
-
-            //Find the next numerical name if the vm exists
-            for (int i = 1; !searcher.searchVmName(vmName); i++)
-            {
-                vmName = vmName.Remove(vmName.Length - 1, 1) + i;
-            }
-            return vmName;
+            int vmId = searcher.getVmId() + 1;
+            return formatName(vmName + vmId);
         }
 
 

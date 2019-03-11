@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using test_OVD_clientless.GuacamoleDatabaseConnectors;
 
 namespace test_OVD_clientless.Helpers
 {
@@ -15,6 +16,18 @@ namespace test_OVD_clientless.Helpers
         public bool validateInputNumber(int number) 
         {
             return (number >= 0);
+        }
+
+
+        /// <summary>
+        /// Validates the name of the group by checking if the given name exists.
+        /// </summary>
+        /// <returns><c>true</c>, if group name was validated, <c>false</c> otherwise.</returns>
+        /// <param name="groupName">Group name.</param>
+        public bool validateGroupName(string groupName)
+        {
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+            return !searcher.searchGroupName(groupName);
         }
 
 
