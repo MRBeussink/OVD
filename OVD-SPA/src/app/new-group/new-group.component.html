@@ -1,0 +1,87 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form role="form" method="POST" action="#">
+        <legend class="text-center">Create Group</legend>
+        <fieldset>
+          <legend>Group Details</legend>
+          <div class="form-group col-md-6">
+            <label for="first_name">Group Name</label>
+            <input
+              type="text"
+              class="form-control"
+              name=""
+              id="group_name"
+              placeholder="Group Name"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="total_vm">Total VMs</label>
+            <input
+              type="number"
+              class="form-control"
+              name="total_vm"
+              id=""
+              placeholder="Total VMs"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="hotspares">Hotspares</label>
+            <input
+              type="number"
+              class="form-control"
+              name=""
+              id="hotspares"
+              placeholder="Hotspares"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="country">VM Image</label>
+            <select class="form-control" name="" id="image">
+              <option>ISO 1</option>
+              <option>ISO 2</option>
+              <option>ISO 3</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Users</legend>
+            <div class="form-group col-md-6">
+                <div class="row row-no-gutters border-bottom border-secondary">
+                    <div class="col-lg-9">Dawgtag</div>
+                    <div class="col-sm-3">Remove</div>
+                </div>
+                <div class="row row-no-gutters">
+                    <div class="col-lg-10">SIU851234567</div>
+                    <div class="col-xs-2 delete">x</div>
+                </div>
+                <div class="row row-no-gutters">
+                    <div class="col-lg-10">SIU852345678</div>
+                    <div class="col-xs-2 delete">x</div>
+                </div>
+                <div class="row row-no-gutters">
+                    <div class="col-lg-10">SIU853456789</div>
+                    <div class="col-xs-2 delete">x</div>
+                </div>
+              </div>
+          </fieldset>
+
+        <div class="form-group">
+          <div class="col-md-12">
+            <div class="row row-no-gutters">
+                <button type="button" class="btn btn-primary col-sm-3" [routerLink]="['/groups']" >
+                    Cancel
+                  </button>
+                  <div class="col-lg-6"></div>
+                <button type="submit" class="btn btn-primary col-sm-3">
+                    Create
+                </button>
+
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,3 +1,20 @@
-<p>
-  groups works!
-</p>
+<table border="1">
+  <tr>
+    <th>Group Name</th>
+    <th>Active VMs</th>
+    <th>Running VMs</th>
+    <th>Offline VMs</th>
+    <th>Select</th>
+  </tr>
+  <tr>
+    <th>Sample Group</th>
+    <th>5</th>
+    <th>8</th>
+    <th>2</th>
+    <th><input type="checkbox" /></th>
+  </tr>
+</table>
+
+<input type="button" value="Create" [routerLink]="['/new']" />
+<input type="button" value="Edit" />
+<input type="button" value="Delete" />

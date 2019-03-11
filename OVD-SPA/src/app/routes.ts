@@ -6,6 +6,7 @@ import { AuthGuard } from './_guards/auth.guard';
 import { SessionsComponent } from './sessions/sessions.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserComponent } from './user/user.component';
+import { NewGroupComponent } from './new-group/new-group.component';
 
 export const appRoutes: Routes = [
     { path: '', component: UserComponent },
@@ -18,7 +19,8 @@ export const appRoutes: Routes = [
             { path: 'dashboard', component: DashboardComponent },
             { path: 'groups', component: GroupsComponent },
             { path: 'sessions', component: SessionsComponent },
-            { path: 'settings', component: SettingsComponent }
+            { path: 'settings', component: SettingsComponent },
+            { path: 'new', component: NewGroupComponent }
         ]
     },
     { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }

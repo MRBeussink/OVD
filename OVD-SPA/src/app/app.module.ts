@@ -16,6 +16,7 @@ import { AuthGuard } from './_guards/auth.guard';
 import { SessionsComponent } from './sessions/sessions.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserComponent } from './user/user.component';
+import { NewGroupComponent } from './new-group/new-group.component';
 
 @NgModule({
    declarations: [
@@ -26,7 +27,8 @@ import { UserComponent } from './user/user.component';
       HomeComponent,
       SessionsComponent,
       SettingsComponent,
-      UserComponent
+      UserComponent,
+      NewGroupComponent
    ],
    imports: [
       BrowserModule,
