@@ -1,4 +1,6 @@
 using System;
+using System.Text.RegularExpressions;
+using test_OVD_clientless.DatabaseConnectors;
 
 namespace test_OVD_clientless.Helpers
 {
@@ -13,8 +15,8 @@ namespace test_OVD_clientless.Helpers
         /// <param name="number">The integer to validate.</param>
         public bool validateInputNumber(int number) 
         {
-	        return number >= 0;
-	    }
+            return (number >= 0);
+        }
 
 
         /// <summary> 
@@ -29,6 +31,37 @@ namespace test_OVD_clientless.Helpers
             return dbc.searchGroupName(groupName);
         }
 
+
+        /// <summary>
+        /// Validates and sees if the given user is stored within the Guacamole database.
+        /// </summary>
+        /// <returns><c>true</c>, if user was a valid existing user, <c>false</c> otherwise.</returns>
+        /// <param name="dawgtag">Dawgtag.</param>
+        /// <param name="hash">Password hash.</param>
+        /// <param name="salt">Password salt.</param>
+        public bool validateUser(String dawgtag, String hash, String salt)
+        {
+            GuacamoleDatabaseConnector dbc = new GuacamoleDatabaseConnector();
+            return dbc.searchUser(dawgtag);
+        }
+
+
+        /// <summary>
+        /// Ensures that the dawgtag given is in the proper format.
+        /// </summary>
+        /// <returns><c>true</c>, if dawgtag was valid, <c>false</c> otherwise.</returns>
+        /// <param name="dawgtag">Dawgtag.</param>
+        public bool validateDawgtag(string dawgtag)
+        {
+            //Ensure dawg tag is in the proper format
+            dawgtag = dawgtag.ToLower();
+            Regex regex = new Regex(@"siu85\d{7}\z");
+            Match match = regex.Match(dawgtag);
+
+            return match.Success;
+        }
+
+
         /// <summary>
         /// Validates the name of the given vm.
         /// </summary>
@@ -40,5 +73,6 @@ namespace test_OVD_clientless.Helpers
             String statusResult = executor.executeVmNameExists(vmName);
             return statusResult == "status";
         }
+
     }
 }

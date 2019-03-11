@@ -12,6 +12,7 @@ namespace test_OVD_clientless.Controllers
         {
             //Form Variables REMOVE ONCE CONTROLLER IS USED
             string groupName = "test_group";
+            string boxType = "test_box";
             string[] dawgtags = { "siu853401101", "siu82341254" };
             int maxNumVms = 15;
             int minNumVms = 5;
@@ -46,54 +47,62 @@ namespace test_OVD_clientless.Controllers
                 return false;
             }
 
-            try
+            Group newGroup = null;
+            Config newConfig = null;
+            ICollection<User> users = null;
+            ICollection<VirtualMachine> vms = null;
+
+            //Initalize the group object
+            newGroup = new Group
             {
-                Group newGroup = new Group();
-                Config newConfig = new Config();
-                ICollection<User> userCollection = new List<User>();
-                ICollection<VirtualMachine> vmCollection = new List<VirtualMachine>();
+                name = groupName,
+                config = newConfig,
+                members = users
+            };
 
-                //Initalize the Group Object
-                newGroup.name = groupName;
-                newGroup.config = newConfig;
-                newGroup.members = userCollection;
-
-                //Initalize the Configuration Object
-                newConfig.group = newGroup;
-                newConfig.hotspareNum = hotspares;
-                newConfig.maxNum = maxNumVms;
-                newConfig.minNum = minNumVms;
-
-                //Store the corresponding user and group information
-                /*for (int i = 0; i < dawgtags.Length - 1; i++)
-                {
-                    User newUser = new User();
-                    newUser.dawgtag = dawgtags[i];
-                    newUser.groups.Add(newGroup);
-                    userCollection.Add(newUser);
-                }*/
-
-                //Initalize the Guacamole connection group
-                if (!initalizeConnectionGroup(newGroup))
-                {
-                    Console.Error.Write("Error: Could not configure the Guacamole " +
-                        "connection group.\n");
-                    return false;
-                }
-            }
-            catch (Exception e)
+            //Initalize the config object
+            Config groupConfig = new Config
             {
-                Console.Error.Write(e);
+                group = newGroup,
+                maxNum = maxNumVms,
+                minNum = minNumVms,
+                hotspareNum = hotspares,
+                virtualMachines = vms
+            };
+
+            //Insert group into Apache Guacamole
+            if (!insertGroup(newGroup))
+            {
+                Console.Error.Write("Error: Could not insert the created group" +
+                    "into Apache Guacamole.");
+                //Delete from Entity framework
                 return false;
             }
-            //Initalize the VirtualBox connection virtual machines
-            //initalizeVm()
+
+            //Initalize the user collection
+           //users = initalizeUsers(dawgtags);
+
+            //Initalize the virtual machines
+            //vms = initalizeVms(groupName, boxType, minNumVms);
+
+
+
+
+            //Store the corresponding user and group information
+            /*for (int i = 0; i < dawgtags.Length - 1; i++)
+            {
+                User newUser = new User();
+                newUser.dawgtag = dawgtags[i];
+                newUser.groups.Add(newGroup);
+                userCollection.Add(newUser);
+            }*/
             return true;
         }
 
 
-        public bool initalizeConnectionGroup(Group newGroup)
+        public bool insertGroup(Group newGroup)
         {
+            //Update the Guacamole Database
             GuacamoleDatabaseConnector connector = new GuacamoleDatabaseConnector();
             return connector.insertGroup(newGroup);
         }
