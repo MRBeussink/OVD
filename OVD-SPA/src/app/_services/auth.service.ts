@@ -34,8 +34,10 @@ loggedIn() {
 }
 
 isAdmin() {
-  if (this.decodedToken && this.decodedToken.role === 'admin') {
-    return true;
+  if (this.loggedIn()) {
+    if (this.decodedToken && this.decodedToken.role === 'admin') {
+      return true;
+    }
   }
   return false;
 }
