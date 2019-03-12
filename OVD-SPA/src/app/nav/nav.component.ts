@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { Router } from '@angular/router';
+import { modelGroupProvider } from '@angular/forms/src/directives/ng_model_group';
 
 @Component({
   selector: 'app-nav',
@@ -32,6 +33,10 @@ export class NavComponent implements OnInit {
         this.router.navigate(['']);
       }
     });
+
+    // Clear login form
+    this.model.username = '';
+    this.model.password = '';
   }
 
   // Check the api to see if the user is logged in
@@ -39,7 +44,7 @@ export class NavComponent implements OnInit {
     return this.authService.loggedIn();
   }
 
-  // Check the api to see if the user is an admin
+  // Check the api to see if the user is a valid admin
   isAdmin() {
     return this.authService.isAdmin();
   }
@@ -47,6 +52,6 @@ export class NavComponent implements OnInit {
   // Deletes user's token and redirects to home page
   logout() {
     this.authService.logout();
-    this.router.navigate(['/home']);
+    this.router.navigate(['/login']);
   }
 }
