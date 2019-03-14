@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 namespace test_OVD_clientless.GuacamoleDatabaseConnectors
 {
-    public class GuacamoleDatabaseConnector
+    public class GuacamoleDatabaseConnector : IDisposable
     {
 
         private MySqlConnection connection;
@@ -13,15 +14,63 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         private const string USER = "root";
         private const string PASSWORD = "secret";
 
+        private bool isDisposed = false;
 
         /// <summary>
         /// Initializes a new instance of the
-        /// <see cref="T:test_OVD_clientless.Guacamole_Connector.GuacamoleDatabaseConnector"/> class.
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> class.
         /// </summary>
-        public GuacamoleDatabaseConnector()
+        public GuacamoleDatabaseConnector(ref List<Exception> exceptions)
         {
             initialize();
-            openConnection();
+            openConnection(ref exceptions);
+        }
+
+
+        /// <summary>
+        /// Releases all resource used by the
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> object.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/>. The
+        /// <see cref="Dispose"/> method leaves the
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> in an unusable
+        /// state. After calling <see cref="Dispose"/>, you must release all references to the
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> so the garbage
+        /// collector can reclaim the memory that the
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> was occupying.</remarks>
+        public void Dispose()
+        {
+            ReleaseResources(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        /// <summary>
+        /// Releases the resources.
+        /// </summary>
+        /// <param name="isFromDispose">If set to <c>true</c> is from dispose.</param>
+        protected void ReleaseResources(bool isFromDispose)
+        {
+            if (!isDisposed)
+            {
+                if (isFromDispose)
+                {
+                    closeConnection();
+                }
+            }
+            isDisposed = true;
+        }
+
+
+        /// <summary>
+        /// Releases unmanaged resources and performs other cleanup operations before the
+        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> is reclaimed by
+        /// garbage collection.
+        /// </summary>
+        ~GuacamoleDatabaseConnector()
+        {
+            ReleaseResources(false);
         }
 
 
@@ -52,7 +101,7 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// Opens a connection to the Guacamole mysql database.
         /// </summary>
         /// <returns><c>true</c>, if connection was opened, <c>false</c> otherwise.</returns>
-        private bool openConnection()
+        private bool openConnection(ref List<Exception> exceptions)
         {
             try
             {
@@ -61,7 +110,7 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
             }
             catch (MySqlException e)
             {
-                Console.Error.Write(e.Message);
+                exceptions.Add(e);
                 return false;
             }
         }
@@ -71,29 +120,9 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// Closes the connection to the Guacamole mysql database.
         /// </summary>
         /// <returns><c>true</c>, if connection was closed, <c>false</c> otherwise.</returns>
-        private bool closeConnection()
+        private void closeConnection()
         {
-            try
-            {
-                connection.Close();
-                return true;
-            }
-            catch (MySqlException e)
-            {
-                Console.Error.Write(e.Message);
-                return false;
-            }
-        }
-
-
-        /// <summary>
-        /// Releases unmanaged resources and performs other cleanup operations before the
-        /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> is reclaimed by
-        /// garbage collection.
-        /// </summary>
-        ~GuacamoleDatabaseConnector()
-        {
-            closeConnection();
+            connection.Close();
         }
     }
 }

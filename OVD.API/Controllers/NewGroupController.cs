@@ -3,77 +3,119 @@ using System.Collections.Generic;
 using test_OVD_clientless.Models;
 using test_OVD_clientless.Helpers;
 using test_OVD_clientless.GuacamoleDatabaseConnectors;
+using test_OVD_clientless.ScriptConnectors;
+using test_OVD_clientless.Exceptions;
 
 namespace test_OVD_clientless.Controllers
 {
     public class NewGroupController
-    { 
+    {
 
-        public bool putExample(string groupName, int maxVms, int minVms, int hotspares)
+        public void putExample()
         {
-            Validator checker = new Validator();
-            Formatter styler = new Formatter();
+
+            /*******************REMOVE FROM IMPLEMENTATION***********************/
+            string groupName = "Test Group 1";
+            string vmChoice = "test_ubuntu";
+            int maxVms = 10;
+            int minVms = 5;
+            int hotspares = 2;
+
+            ICollection<string> dawgtags = new List<string>();
+            dawgtags.Add("siu853401101");
+            /********************************************************************/
+
+            //Objects to be stored into the entity framework database
             GroupConfig group;
             ICollection<VirtualMachine> virtualMachines = new List<VirtualMachine>();
+            List<Exception> exceptions = new List<Exception>(); ;
 
-            //Fomat the group name given
-            groupName = styler.formatGroupName(groupName);
-
-            //Validate the group name
-            if (!checker.validateGroupName(groupName))
+            //Reformat the given input strings to ensure that the consistancy of
+            //the databases is maintained
+            using (Formatter styler = new Formatter())
             {
-                Console.Error.Write("Error: This group name is already taken.\n");
-                return false;
+                groupName = styler.formatGroupName(groupName);
+                vmChoice = styler.formatName(vmChoice);
             }
 
-            //Validate the maximum number of virtual machines
-            if (!checker.validateInputNumber(maxVms))
+            //Validate the user input provided
+            using (Validator checker = new Validator())
             {
-                Console.Error.Write("Error: The given vm max total is invalid.\n");
-                return false;
-            }
+                //Check if the group arguments are proper
+                checker.validateGroupName(groupName, ref exceptions);
+                checker.validateVmChoice(vmChoice, ref exceptions);
+                checker.validateMin(minVms, ref exceptions);
+                checker.validateMax(maxVms, ref exceptions);
+                checker.validateMinMax(minVms, maxVms, ref exceptions);
+                checker.validateHotspares(hotspares, ref exceptions);
 
-            //Validate the minimum number of virtual machines
-            if (!checker.validateInputNumber(maxVms))
-            {
-                Console.Error.Write("Error: The given vm min total is invalid.\n");
-                return false;
-            }
+                //Check if the dawgtags are proper
+                foreach (string dawgtag in dawgtags)
+                {
+                    checker.validateDawgtag(dawgtag, ref exceptions);
+                }
 
-            //Validate the total number of hotspares
-            if (!checker.validateInputNumber(hotspares))
-            {
-                Console.Error.Write("Error: The given hotspare number is invalid.\n");
-                return false;
+                if (exceptions.Count != 0)
+                {
+                    handleErrors(exceptions);
+                    return; //REMOVE
+                }
             }
 
             //Initalize the connection group with Guacamole
-            group = initalizeGroup(groupName, maxVms, minVms, hotspares);
-            if (group == null)
+            group = initalizeGroup(groupName, maxVms, minVms, hotspares, ref exceptions);
+            if (exceptions.Count != 0)
             {
-                Console.Error.Write("Error: The group could not be created.\n");
-                return false;
+                handleErrors(exceptions);
+                return; //REMOVE
             }
 
             /*//Initalize the virtual machines by calling the required scripts
+            //Only initialize and start the minimum number desired
             for(int i = 0; i < minVms; i++)
             {
-                VirtualMachine vm = initalizeVm(groupName, vmChoice);
-                if (vm == null)
-                {
-                    Console.Error.Write("Error: Could not initalize the virtual machine.\n");
-                    return false;
-                }
-                else
+                VirtualMachine vm = initalizeVm(groupName, vmChoice, ref exceptions);
+                if(vm != null)
                 {
                     virtualMachines.Add(vm);
                 }
+            }
+            if (exceptions.Count != 0)
+            {
+                handleErrors(exceptions);
+                return; //REMOVE
             }*/
-            return true;
+
+            //Initalize the users if they do not exist
+            //Add the users to the newly created group
+            foreach (string dawgtag in dawgtags)
+            {
+                //Add new users into the database
+                bool isInitialized = initalizeUser(dawgtag, ref exceptions);
+
+                //Add the users to the connection group
+                if(isInitialized)
+                {
+                    addUserToGroup(dawgtag, groupName, ref exceptions);
+                }
+            }
+            if (exceptions.Count != 0)
+            {
+                handleErrors(exceptions);
+                return; //REMOVE
+            }
         }
 
 
-        public GroupConfig initalizeGroup(string groupName, int maxVms, int minVms, int hotspares)
+        /// <summary>
+        /// Initalizes the a new connection group.
+        /// </summary>
+        /// <returns>The newly created group.</returns>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="maxVms">Max vms.</param>
+        /// <param name="minVms">Minimum vms.</param>
+        /// <param name="hotspares">Hotspares.</param>
+        public GroupConfig initalizeGroup(string groupName, int maxVms, int minVms, int hotspares, ref List<Exception> exceptions)
         {
             GroupConfig group = new GroupConfig
             {
@@ -84,19 +126,131 @@ namespace test_OVD_clientless.Controllers
             };
 
             GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
-            if (!inserter.insertGroup(group)) 
+            if (!inserter.insertGroup(group, ref exceptions))
             {
-                Console.Error.Write("Error: Could not insert the new group into " +
-                	"the Guacamole database.\n");
+                exceptions.Add(new GroupInitalizationException("The provided group (" +
+                    groupName + ") could not be created. Please check the status of both the " +
+                    "entity framework database as well as the guacamole mysql database.\n\n"));
                 return null;
             }
             return group;
         }
 
 
-        public VirtualMachine initalizeVm(string groupName, string vmChoice)
+        /// <summary>
+        /// Initalizes the vm given the type of the vm as well as the name.
+        /// </summary>
+        /// <returns>The new virtual machine object.</returns>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="vmChoice">Vm choice.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public VirtualMachine initalizeVm(string groupName, string vmChoice, ref List<Exception> exceptions)
         {
-            return null;
+            ScriptVmCreator creator = new ScriptVmCreator();
+            ScriptVmStarter starter = new ScriptVmStarter();
+            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+            string vmName = string.Empty;
+
+            //Get next vm from pattern
+            using (Formatter styler = new Formatter())
+            {
+                styler.formatVmName(groupName, ref exceptions);
+            }
+
+            //Validate that the vm name is not taken
+            using(Validator checker = new Validator())
+            {
+                checker.validateVmName(vmName, ref exceptions);
+            }
+
+            //Create the vm objected that will be stored in entity framework
+            VirtualMachine vm = new VirtualMachine
+            {
+                vmName = vmName,
+                baseBox = vmChoice
+            };
+
+            //Create the new virtual machine and start it
+            creator.cloneVm(vmName, vmChoice);
+            starter.startVm(vmName);
+
+            //Add the new vm to guacamole
+            if (!inserter.insertVm(vmName, vmChoice, ref exceptions))
+            {
+                exceptions.Add(new VmInitializationException("The provided vm (" +
+                    vmName + ") of the type (" + vmChoice + ") could not be created." +
+                    " Please check the status of both the entity framework database as" +
+                    " well as the guacamole mysql database.\n\n"));
+                return null;
+            }
+
+            return vm;
+        }
+
+
+        /// <summary>
+        /// Inserts the user into the guacamole database if it does not exist.
+        /// </summary>
+        /// <returns><c>true</c>, if user was added to guacamole, <c>false</c> otherwise.</returns>
+        /// <param name="dawgtag">Dawgtag.</param>
+        public bool initalizeUser(string dawgtag, ref List<Exception> exceptions)
+        {
+            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+
+            //keep the dawgtag format consistant in the database
+            using(Formatter styler = new Formatter())
+            {
+                dawgtag = styler.formatUserName(dawgtag);
+            }
+
+            //Check if the user already exists
+            if (!searcher.searchUserName(dawgtag, ref exceptions))
+            {
+                //Add the user if it was not found
+                if (!inserter.insertUser(dawgtag, ref exceptions))
+                {
+                    exceptions.Add(new UserInitializationException("The user with the dawgtag (" +
+                        dawgtag + ") could not be added to the system. Please check the status of " +
+                        "both the entity framework database as well as the guacamole mysql database.\n\n"));
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Adds the user to Guacamole connection group.
+        /// </summary>
+        /// <returns><c>true</c>, if user was added to the group<c>false</c> otherwise.</returns>
+        /// <param name="dawgtag">Dawgtag.</param>
+        /// <param name="groupName">Group name.</param>
+        public bool addUserToGroup(string dawgtag, string groupName, ref List<Exception> exceptions)
+        {
+            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+            if (!inserter.insertUserIntoGroup(dawgtag, groupName, ref exceptions))
+            {
+                exceptions.Add(new UserInitializationException("The user with the dawgtag (" +
+                        dawgtag + ") could not be added to the group (" + groupName + "). " +
+                        	"Please check the status of the guacamole mysql database.\n\n"));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Sends any recieved errors back to the client.
+        /// </summary>
+        /// <param name="exceptions">Exceptions.</param>
+        public void handleErrors(List<Exception> exceptions)
+        {
+            foreach (Exception e in exceptions)
+            {
+                Console.Error.Write(e.Message);
+            }
+            //SEND BACK ERROR MESSAGES
         }
     }
 }

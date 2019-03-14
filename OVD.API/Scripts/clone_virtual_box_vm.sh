@@ -23,7 +23,6 @@ __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 __base="$(basename ${__file} .sh)"
 
 # Instantiate Custom Variables
-startvm=0
 inputname=""
 outputname=""
 
@@ -43,9 +42,6 @@ while [[ $# -gt 0 ]]; do
 	    ;;
 	-d|--debug)
 	    start_debugging
-	    ;;
-	-s|--start)
-	    startvm=1
 	    ;;
 	-i|--inputname)
 	    shift
@@ -69,15 +65,8 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-
-
 # Clone the Virtual Machine Specified, Register it with VirtualBox, and Rename it
 VBoxManage clonevm --register "$inputname" --name "$outputname"
-
-# Start the Newly Created Virtual Machine
-if [ startvm -eq 1 ]; then
-    VBoxManage startvm "$outputname" --type headless
-fi
 
 exit $?
 

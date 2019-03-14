@@ -1,21 +1,70 @@
 ﻿using System;
+using System.Collections.Generic;
 using test_OVD_clientless.GuacamoleDatabaseConnectors;
 
 namespace test_OVD_clientless.Helpers
 {
-    public class Formatter
+    public class Formatter : IDisposable
     {
+        private bool isDisposed = false;
 
+        /// <summary>
+        /// Releases all resource used by the <see cref="T:test_OVD_clientless.Helpers.Formatter"/> object.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose"/> when you are finished using the
+        /// <see cref="T:test_OVD_clientless.Helpers.Formatter"/>. The <see cref="Dispose"/> method leaves the
+        /// <see cref="T:test_OVD_clientless.Helpers.Formatter"/> in an unusable state. After calling
+        /// <see cref="Dispose"/>, you must release all references to the
+        /// <see cref="T:test_OVD_clientless.Helpers.Formatter"/> so the garbage collector can reclaim the memory that
+        /// the <see cref="T:test_OVD_clientless.Helpers.Formatter"/> was occupying.</remarks>
+        public void Dispose()
+        {
+            ReleaseResources(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        /// <summary>
+        /// Releases the managed and unmanaged resources.
+        /// </summary>
+        /// <param name="isFromDispose">If set to <c>true</c> is from dispose.</param>
+        protected void ReleaseResources(bool isFromDispose)
+        {
+            if (!isDisposed)
+            {
+                if (isFromDispose)
+                {
+                    // TODO: Release managed resources here
+                }
+                //TODO: Release unmanaged resources here
+            }
+            isDisposed = true;
+        }
+
+
+        /// <summary>
+        /// Releases unmanaged resources and performs other cleanup operations before the
+        /// <see cref="T:test_OVD_clientless.Helpers.Formatter"/> is reclaimed by garbage collection.
+        /// </summary>
+        ~Formatter()
+        {
+            ReleaseResources(false);
+        }
+
+
+        /*******************************************************************************
+         *------------------------Primary Formatter Methods----------------------------*
+         ******************************************************************************/
         /// <summary>
         /// Formats the name of the vm ensuring it is not taken.
         /// </summary>
         /// <returns>The vm name.</returns>
         /// <param name="vmName">The desired vm name based off of the group name.</param>
-        public string formatVmName(String vmName)
+        public string formatVmName(String vmName, ref List<Exception> exceptions)
         {
             GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
-            int vmId = searcher.getVmId() + 1;
-            return formatName(vmName + vmId);
+            int vmId = searcher.getMaxVmId(ref exceptions) + 1;
+            return formatName(vmName + "_" + vmId);
         }
 
 

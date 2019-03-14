@@ -5,39 +5,20 @@ namespace test_OVD_clientless.ScriptConnectors
 {
     public class ScriptExecutor
     {
-        private const string LIST_VMS_SCRIPT_LOCATION = "./Scripts/list_virtual_box_vm.sh";
-        private const string VM_NAME_EXISTS_SCRIPT_LOCATION = "./Scripts/check_name_exists_virtual_box_vm.sh";
+
         private const string START_VMS_SCRIPT_LOCATION = "./Scripts/start_virtual_box_vm.sh";
         private const string STOP_VMS_SCRIPT_LOCATION = "./Scripts/stop_virtual_box_vm.sh";
-
-        /// <summary>
-        /// Executes the script that presents a sorted list of the virtual
-        /// machines on the system. This version assumes there will be no arguments
-        /// </summary>
-        /// <returns>The list of vms.</returns>
-        public string executeListVms() => executeScript(LIST_VMS_SCRIPT_LOCATION, null);
+        private const string CLONE_VMS_SCRIPT_LOCATION = "./Scripts/clone_virtual_box_vm.sh";
 
 
         /// <summary>
-        /// Executes the script that presents a sorted list of the virtual
-        /// machines on the system. This version assumes there will be an argument.
+        /// Executes the clone vms script that makes a copy based off of a given image.
         /// </summary>
-        /// <returns>The list of vms.</returns>
-        /// <param name="argumentString">A string containing the dash seperated arguments.</param>
-        public string executeListVms(String argumentString)
+        /// <returns>The clone vms.</returns>
+        /// <param name="argumentString">Argument string.</param>
+        public string executeCloneVms(string argumentString)
         {
-            return executeScript(LIST_VMS_SCRIPT_LOCATION, argumentString);
-        }
-
-
-        /// <summary>
-        /// Executes the script that will start a specified virtual machine.
-        /// </summary>
-        /// <returns>Status information on the started vm.</returns>
-        /// <param name="argumentString">A string containing the dash seperated arguments.</param>
-        public string executeVmNameExists(String argumentString)
-        {
-            return executeScript(VM_NAME_EXISTS_SCRIPT_LOCATION, argumentString);
+            return executeScript(CLONE_VMS_SCRIPT_LOCATION, argumentString);
         }
 
 

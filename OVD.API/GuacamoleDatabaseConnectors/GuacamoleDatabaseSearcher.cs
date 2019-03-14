@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
+using test_OVD_clientless.Exceptions;
 
 namespace test_OVD_clientless.GuacamoleDatabaseConnectors
 {
@@ -11,36 +12,19 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if group name was found, <c>false</c> otherwise.</returns>
         /// <param name="groupName">Group name.</param>
-        public bool searchGroupName(string groupName)
+        public bool searchGroupName(string groupName, ref List<Exception> exceptions)
         {
-            try
-            {
-                GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector();
-                MySqlDataReader reader = null;
-                string queryResults = string.Empty;
+            string queryString =
+                "SELECT connection_group_name FROM guacamole_connection_group " +
+                "WHERE connection_group_name=@groupname";
 
-                MySqlCommand query = new MySqlCommand(
-                    "SELECT connection_group_name FROM guacamole_connection_group " +
-                    "WHERE connection_group_name=@groupname",
-                    gdbc.getConnection());
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@groupname");
 
-                query.Prepare();
-                query.Parameters.AddWithValue("@groupname", groupName);
-                reader = query.ExecuteReader();
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(groupName);
 
-                while (reader.Read())
-                {
-                    queryResults = (string)reader["connection_group_name"];
-                }
-
-                // Returns true if the there is a group with the name given
-                return (queryResults != string.Empty);
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-                return false;
-            }
+            return searchQuery(queryString, argNames, args, ref exceptions);
         }
 
 
@@ -49,36 +33,19 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if user name was found, <c>false</c> otherwise.</returns>
         /// <param name="dawgtag">Dawgtag.</param>
-        public bool searchUserName(string dawgtag)
+        public bool searchUserName(string dawgtag, ref List<Exception> exceptions)
         {
-            try
-            {
-                GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector();
-                MySqlDataReader reader = null;
-                string queryResults = string.Empty;
+            string queryString =
+                "SELECT name FROM guacamole_entity " +
+                "WHERE type='USER' AND name=@username";
 
-                MySqlCommand query = new MySqlCommand(
-                    "SELECT name FROM guacamole_entity " +
-                    "WHERE type='USER' AND name=@username",
-                    gdbc.getConnection());
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@username");
 
-                query.Prepare();
-                query.Parameters.AddWithValue("@username", dawgtag);
-                reader = query.ExecuteReader();
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(dawgtag);
 
-                while (reader.Read())
-                {
-                    queryResults = (string)reader["name"];
-                }
-
-                // Returns true if the there are zero usernames with the name given
-                return (queryResults != string.Empty);
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-                return false;
-            }
+            return searchQuery(queryString, argNames, args, ref exceptions);
         }
 
 
@@ -87,36 +54,19 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if vm name was found, <c>false</c> otherwise.</returns>
         /// <param name="vmName">Vm name.</param>
-        public bool searchVmName(string vmName)
+        public bool searchVmName(string vmName, ref List<Exception> exceptions)
         {
-            try
-            {
-                GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector();
-                MySqlDataReader reader = null;
-                string queryResults = string.Empty;
+            string queryString =
+                "SELECT connection_name FROM guacamole_connection " +
+                 "WHERE connection_name=@vmname";
 
-                MySqlCommand query = new MySqlCommand(
-                    "SELECT connection_name FROM guacamole_connection " +
-                    "WHERE connection_name=@vmname",
-                    gdbc.getConnection());
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@vmname");
 
-                query.Prepare();
-                query.Parameters.AddWithValue("@vmname", vmName);
-                reader = query.ExecuteReader();
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(vmName);
 
-                while (reader.Read())
-                {
-                    queryResults = (string)reader["connection_name"];
-                }
-
-                // Returns true if the there are zero vms with the name give
-                return (queryResults != string.Empty);
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-                return false;
-            }
+            return searchQuery(queryString, argNames, args, ref exceptions);
         }
 
 
@@ -124,22 +74,21 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// Gets the vm identifier number.
         /// </summary>
         /// <returns>The vm identifier number.</returns>
-        public int getVmId()
+        public int getMaxVmId(ref List<Exception> exceptions)
         {
+            string queryString = "SELECT MAX(connection_id) FROM guacamole_connection";
             try
             {
-                GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector();
-
-                MySqlCommand query = new MySqlCommand(
-                    "SELECT MAX(connection_id) FROM guacamole_connection",
-                    gdbc.getConnection());
-
-                query.Prepare();
-                return Convert.ToInt32(query.ExecuteScalar());
+                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
+                {
+                    MySqlCommand query = new MySqlCommand(queryString, gdbc.getConnection());
+                    query.Prepare();
+                    return Convert.ToInt32(query.ExecuteScalar());
+                }
             }
             catch (Exception e)
             {
-                Console.Error.Write(e.Message);
+                exceptions.Add(e);
                 return -1;
             }
         }
@@ -150,69 +99,80 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns>An ICollection<string> of all virtual machine names</returns>
         /// /// <param name="groupName">Group name.</param>
-        public ICollection<string> getAllGroupVmNames(string groupName)
+        public ICollection<string> getAllGroupVmNames(string groupName, ref List<Exception> exceptions)
         {
+            string queryString =
+                "SELECT connection_name FROM guacamole_connection, guacamole_connection_group " +
+                "WHERE guacamole_connection.parent_id=guacamole_connection_group.connection_group_id " +
+                "AND guacamole_connection_group.connection_group_name=@groupname";
             try
             {
-                GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector();
-                MySqlDataReader reader = null;
                 ICollection<string> queryResults = new List<string>();
 
-                MySqlCommand query = new MySqlCommand(
-                    "SELECT connection_name FROM guacamole_connection, guacamole_connection_group " +
-                    "WHERE guacamole_connection.parent_id=guacamole_connection_group.connection_group_id " +
-                    "AND guacamole_connection_group.connection_group_name=@groupname", gdbc.getConnection());
-
-                query.Prepare();
-                query.Parameters.AddWithValue("@groupname", groupName);
-                reader = query.ExecuteReader();
-
-                while (reader.Read())
+                using(GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
                 {
-                    queryResults.Add((string)reader["connection_name"]);
-                }
+                    MySqlCommand query = new MySqlCommand(queryString, gdbc.getConnection());
+                    query.Prepare();
+                    query.Parameters.AddWithValue("@groupname", groupName);
 
+                    using (MySqlDataReader reader = query.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            queryResults.Add((string)reader["connection_name"]);
+                        }
+                    }
+                }
                 // Returns the list of virtual machine connection names
                 return queryResults;
             }
             catch (Exception e)
             {
-                Console.Error.Write(e.Message);
+                exceptions.Add(e);
                 return null;
             }
         }
 
 
         /// <summary>
-        /// Gets every virtual machine connection in a particular connection group.
+        /// General format for running a search query on the guacamole database
         /// </summary>
-        /// <returns>An ICollection<string> of all virtual machine names in the group</returns>
-        public ICollection<string> getAllVmNames()
+        /// <returns><c>true</c>, if field was found, <c>false</c> otherwise.</returns>
+        /// <param name="queryString">Query string.</param>
+        /// <param name="argNames">Argument names.</param>
+        /// <param name="args">Arguments.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool searchQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> exceptions)
         {
+            //Validate if the arguments and names are the correct amount
+            if (args.Count != argNames.Count)
+            {
+                exceptions.Add(new InvalidDatabaseArgumentException("The database arguments and argument names " +
+                    "do not match. Ensure that the query is sending the proper arguments.\n\n"));
+                return false;
+            }
+
             try
             {
-                GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector();
-                MySqlDataReader reader = null;
-                ICollection<string> queryResults = new List<string>();
-
-                MySqlCommand query = new MySqlCommand(
-                    "SELECT connection_name FROM guacamole_connection ", gdbc.getConnection());
-
-                query.Prepare();
-                reader = query.ExecuteReader();
-
-                while (reader.Read())
+                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
                 {
-                    queryResults.Add((string)reader["connection_name"]);
-                }
+                    using (MySqlCommand query = new MySqlCommand(queryString, gdbc.getConnection()))
+                    {
+                        query.Prepare();
 
-                // Returns the list of virtual machine connection names
-                return queryResults;
+                        //Add the agrument names and values NOTE: ORDER MATTERS
+                        while (args.Count > 0 && argNames.Count > 0)
+                        {
+                            query.Parameters.AddWithValue(argNames.Dequeue(), args.Dequeue());
+                        }
+                        return (query.ExecuteScalar() != null);
+                    }
+                }
             }
             catch (Exception e)
             {
-                Console.Error.Write(e.Message);
-                return null;
+                exceptions.Add(e);
+                return false;
             }
         }
     }
