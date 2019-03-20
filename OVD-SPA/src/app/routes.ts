@@ -3,18 +3,19 @@ import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GroupsComponent } from './groups/groups.component';
 import { AuthGuard } from './_guards/auth.guard';
+import { RoleGuard } from './_guards/role.guard';
 import { SessionsComponent } from './sessions/sessions.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserComponent } from './user/user.component';
 import { NewGroupComponent } from './new-group/new-group.component';
 
 export const appRoutes: Routes = [
-    { path: '', component: UserComponent },
+    { path: '', component: UserComponent, canActivate: [AuthGuard] },
     { path: 'login', component: HomeComponent },
     {
         path: '',
         runGuardsAndResolvers: 'always',
-        canActivate: [AuthGuard],
+        canActivate: [RoleGuard],
         children: [
             { path: 'dashboard', component: DashboardComponent },
             { path: 'groups', component: GroupsComponent },
