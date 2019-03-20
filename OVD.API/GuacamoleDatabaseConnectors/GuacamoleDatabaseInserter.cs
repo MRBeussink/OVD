@@ -15,9 +15,9 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if group was inserted, <c>false</c> otherwise.</returns>
         /// <param name="newGroup">Group Object.</param>
-        public bool insertGroup(GroupConfig newGroup, ref List<Exception> exceptions)
+        public bool insertConnectionGroup(GroupConfig newGroup, ref List<Exception> exceptions)
         {
-            string queryString =
+            const string queryString =
                 "INSERT INTO guacamole_connection_group (connection_group_name, max_connections, max_connections_per_user) " +
                 "VALUES (@groupname, @maxconnections, @maxuserconnections)";
 
@@ -36,6 +36,54 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
 
 
         /// <summary>
+        /// Creates the desired user group that will allow users to see their
+        /// available connections.
+        /// </summary>
+        /// <returns><c>true</c>, if the usergroup was inserted, <c>false</c> otherwise.</returns>
+        /// <param name="newGroup">New group.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool insertUserGroup(GroupConfig newGroup, ref List<Exception> exceptions)
+        {
+            const string entityQueryString =
+                "INSERT INTO guacamole_entity (name, type) " +
+                "VALUES (@groupname, 'USER_GROUP')";
+
+            const string entityIdQueryString =
+                "(SELECT entity_id FROM guacamole_entity " +
+                "WHERE name = @groupname AND type = 'USER_GROUP')";
+
+            const string groupQueryString =
+                "INSERT INTO guacamole_user_group (entity_id) " +
+                "VALUES (" + entityIdQueryString + ")";
+
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@groupname");
+
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(newGroup.groupName);
+
+            //Insert the usergroup into the entity table
+            if (!insertQuery(entityQueryString, argNames, args, ref exceptions))
+            {
+                exceptions.Add(new UserInitializationException("The group with the name (" +
+                        newGroup.groupName + ") could not be added to the entity table. Please " +
+                            "check the status of the guacamole mysql database.\n\n"));
+                return false;
+            }
+
+            //Insert the user group into the user group table
+            if (!insertQuery(groupQueryString, argNames, args, ref exceptions))
+            {
+                exceptions.Add(new UserInitializationException("The group with the name (" +
+                        newGroup.groupName + ") could not be added to the user table. Please " +
+                            "check the status of the guacamole mysql database.\n\n"));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
         /// Inserts a new user into the guacamole entity table and the guacamole 
         /// user table. This method assumes that authentication is handled external
         /// of the guacamole database. This is why the placeholder of INVALID is used
@@ -45,73 +93,43 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         /// <param name="dawgtag">Dawgtag.</param>
         public bool insertUser(string dawgtag, ref List<Exception> exceptions)
         {
-            const string HASH = "INVALID";
-            int entityId = -1;
 
-            string entityQueryString =
+            const string entityQueryString =
                 "INSERT INTO guacamole_entity (name, type) " +
                 "VALUES (@username, 'USER')";
 
-            string entityIdQueryString =
-                "SELECT entity_id FROM guacamole_entity " +
-                "WHERE name=@username AND type = 'USER'";
+            const string entityIdQueryString =
+                "(SELECT entity_id FROM guacamole_entity " +
+                "WHERE name = @username AND type = 'USER')";
 
-            string userQueryString =
+            const string userQueryString =
                 "INSERT INTO guacamole_user (entity_id, password_hash, password_date) " +
-                "VALUES(@entityid, @hash, CURRENT_TIMESTAMP)";
-            try
+                "VALUES (" + entityIdQueryString + ", 'INVALID', CURRENT_TIMESTAMP)";
+                
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@username");
+
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(dawgtag);
+
+            //Insert the user into the entity table
+            if (!insertQuery(entityQueryString, argNames, args, ref exceptions))
             {
-                using(GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
-                {
-                    MySqlCommand entityQuery = new MySqlCommand(entityQueryString, gdbc.getConnection());
-                    MySqlCommand entityIdQuery = new MySqlCommand(entityIdQueryString, gdbc.getConnection());
-                    MySqlCommand userQuery = new MySqlCommand(userQueryString, gdbc.getConnection());
-
-                    //Add the user to the entity table
-                    entityQuery.Prepare();
-                    entityQuery.Parameters.AddWithValue("@username", dawgtag);
-                    if (entityQuery.ExecuteNonQuery() <= 0)
-                    {
-                        exceptions.Add(new UserInitializationException("Could not add the user (" +
-                            dawgtag + ") into the guacamole mysql database table guacamole_entity.\n\n"));
-                        return false;
-                    }
-
-                    //Retreive the newly created entity id
-                    entityIdQuery.Prepare();
-                    entityIdQuery.Parameters.AddWithValue("@username", dawgtag);
-                    using(MySqlDataReader reader = entityIdQuery.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            entityId = (int)reader["entity_id"];
-                            if (entityId == -1)
-                            {
-                                exceptions.Add(new UserInitializationException("Could not find the user (" +
-                            dawgtag + ") entity_id within the guacamole mysql database table guacamole_entity.\n\n"));
-                                return false;
-                            }
-                        }
-                    }
-
-                    //Insert a value for the user and the hash
-                    userQuery.Prepare();
-                    userQuery.Parameters.AddWithValue("@entityid", entityId);
-                    userQuery.Parameters.AddWithValue("@hash", HASH);
-                    if (userQuery.ExecuteNonQuery() <= 0)
-                    {
-                        exceptions.Add(new UserInitializationException("Could not add the user (" +
-                            dawgtag + ") into the guacamole mysql database table guacamole_user.\n\n"));
-                        return false;
-                    }
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                exceptions.Add(e);
+                exceptions.Add(new UserInitializationException("The user with the dawgtag (" +
+                        dawgtag + ") could not be added to the entity table. Please check the status of " +
+                        "the guacamole mysql database.\n\n"));
                 return false;
             }
+
+            //Insert user and fake hash into the user users table
+            if(!insertQuery(userQueryString, argNames, args, ref exceptions))
+            {
+                exceptions.Add(new UserInitializationException("The user with the dawgtag (" +
+                        dawgtag + ") could not be added to the user table. Please check the status of " +
+                        "the guacamole mysql database.\n\n"));
+                return false;
+            }
+            return true;
         }
 
 
@@ -121,43 +139,59 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         }
 
 
-        /// <summary>
-        /// Inserts the vm connectino information into the group.
-        /// </summary>
-        /// <returns><c>true</c>, if vm was inserted in the group, <c>false</c> otherwise.</returns>
-        /// <param name="vm">Vm.</param>
-        /// <param name="group">Group.</param>
-        /// <param name="exceptions">Exceptions.</param>
-        public bool insertVmIntoGroup(VirtualMachine vm, GroupConfig group, ref List<Exception> exceptions)
-        {
-            string queryString =
-                "INSERT INTO guacamole_connection_group (connection_group_name, max_connections, max_connections_per_user) " +
-                "VALUES (@groupname, @maxconnections, @maxuserconnections)";
-            try
-            {
-                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
-                {
-                    MySqlCommand query = new MySqlCommand(queryString, gdbc.getConnection());
-                    query.Prepare();
-                    query.Parameters.AddWithValue("@groupname", group.groupName);
-                    query.Parameters.AddWithValue("@maxconnections", group.maxNum);
-                    query.Parameters.AddWithValue("@maxuserconnections", MAX_USER_CONNECTIONS);
-
-                    return query.ExecuteNonQuery() > 0;
-                }
-            }
-            catch (Exception e)
-            {
-                exceptions.Add(e);
-                return false;
-            }
-        }
-
-        public bool insertUserIntoGroup(string dawgtag, string groupName, ref List<Exception> exceptions)
+        public bool insertVmIntoConnectionGroup(VirtualMachine vm, GroupConfig group, ref List<Exception> exceptions)
         {
             return true;
         }
 
+
+        /// <summary>
+        /// Inserts the user into the user group.
+        /// </summary>
+        /// <returns><c>true</c>, if user was inserted into the user group<c>false</c> otherwise.</returns>
+        /// <param name="dawgtag">Dawgtag.</param>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool insertUserIntoUserGroup(string dawgtag, string groupName, ref List<Exception> exceptions)
+        {
+            const string groupIdQueryString =
+                "(SELECT user_group_id FROM guacamole_user_group, guacamole_entity " +
+                "WHERE name = @groupname AND type = 'USER_GROUP' " +
+                "AND guacamole_user_group.entity_id=guacamole_entity.entity_id)";
+
+            const string userIdQueryString =
+                "(SELECT entity_id FROM guacamole_entity " +
+                "WHERE name = @username AND type = 'USER')";
+
+            const string memberQueryString =
+                "INSERT INTO guacamole_user_group_member (user_group_id, member_entity_id) " +
+                "VALUES (" + groupIdQueryString + "," + userIdQueryString + ")";
+
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@groupname");
+            argNames.Enqueue("@username");
+
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(groupName);
+            args.Enqueue(dawgtag);
+
+            //Insert the user into the entity table
+            if (!insertQuery(memberQueryString, argNames, args, ref exceptions))
+            {
+                exceptions.Add(new UserInitializationException("The user with the dawgtag (" +
+                        dawgtag + ") could not be added to the user group (" + groupName +
+                        "). Please check the status of the guacamole mysql database.\n\n"));
+                return false;
+            }
+            return true;
+        }
+
+
+
+        public bool insertConnectionGroupIntoUserGroup(string groupName, ref List<Exception> exceptions)
+        {
+
+        }
 
 
         /// <summary>
@@ -178,6 +212,10 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
                 return false;
             }
 
+            //Make a deep copy of the queues to ensure data consistancy
+            Queue<String> copiedArgNames = new Queue<String>(argNames.ToArray());
+            Queue<String> copiedArgs = new Queue<String>(args.ToArray());
+
             try
             {
                 using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
@@ -187,9 +225,10 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
                         query.Prepare();
 
                         //Add the agrument names and values NOTE: ORDER MATTERS
-                        while (args.Count > 0 && argNames.Count > 0)
+                        while (copiedArgs.Count > 0 && copiedArgNames.Count > 0)
                         {
-                            query.Parameters.AddWithValue(argNames.Dequeue(), args.Dequeue());
+                            Console.Error.Write("Name = " + copiedArgNames.Peek() + " Arg = " + copiedArgs.Peek() + ".\n\n");
+                            query.Parameters.AddWithValue(copiedArgNames.Dequeue(), copiedArgs.Dequeue());
                         }
                         return (query.ExecuteNonQuery() > 0);
                     }

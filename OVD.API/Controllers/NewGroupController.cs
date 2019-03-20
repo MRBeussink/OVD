@@ -22,7 +22,7 @@ namespace test_OVD_clientless.Controllers
             int hotspares = 2;
 
             ICollection<string> dawgtags = new List<string>();
-            dawgtags.Add("siu853401101");
+            dawgtags.Add("siu853401103");
             /********************************************************************/
 
             //Objects to be stored into the entity framework database
@@ -94,9 +94,9 @@ namespace test_OVD_clientless.Controllers
                 bool isInitialized = initalizeUser(dawgtag, ref exceptions);
 
                 //Add the users to the connection group
-                if(isInitialized)
+                if (isInitialized)
                 {
-                    addUserToGroup(dawgtag, groupName, ref exceptions);
+                    addUserToUserGroup(dawgtag, groupName, ref exceptions);
                 }
             }
             if (exceptions.Count != 0)
@@ -126,11 +126,28 @@ namespace test_OVD_clientless.Controllers
             };
 
             GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
-            if (!inserter.insertGroup(group, ref exceptions))
+            if (!inserter.insertConnectionGroup(group, ref exceptions))
             {
-                exceptions.Add(new GroupInitalizationException("The provided group (" +
+                exceptions.Add(new GroupInitalizationException("The provided connection group (" +
                     groupName + ") could not be created. Please check the status of both the " +
                     "entity framework database as well as the guacamole mysql database.\n\n"));
+                return null;
+            }
+
+            if (!inserter.insertUserGroup(group, ref exceptions))
+            {
+                exceptions.Add(new GroupInitalizationException("The provided user group (" +
+                    groupName + ") could not be created. Please check the status of both the " +
+                    "entity framework database as well as the guacamole mysql database.\n\n"));
+                return null;
+            }
+
+            if (!inserter.insertConnectionGroupIntoUserGroup(group.groupName, ref exceptions))
+            {
+                exceptions.Add(new GroupInitalizationException("The provided user group (" +
+                    groupName + ") could not be associated with its connection group. Please " +
+                    	"check the status of both the entity framework database as well as the " +
+                    	"guacamole mysql database.\n\n"));
                 return null;
             }
             return group;
@@ -226,13 +243,13 @@ namespace test_OVD_clientless.Controllers
         /// <returns><c>true</c>, if user was added to the group<c>false</c> otherwise.</returns>
         /// <param name="dawgtag">Dawgtag.</param>
         /// <param name="groupName">Group name.</param>
-        public bool addUserToGroup(string dawgtag, string groupName, ref List<Exception> exceptions)
+        public bool addUserToUserGroup(string dawgtag, string groupName, ref List<Exception> exceptions)
         {
             GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
-            if (!inserter.insertUserIntoGroup(dawgtag, groupName, ref exceptions))
+            if (!inserter.insertUserIntoUserGroup(dawgtag, groupName, ref exceptions))
             {
                 exceptions.Add(new UserInitializationException("The user with the dawgtag (" +
-                        dawgtag + ") could not be added to the group (" + groupName + "). " +
+                        dawgtag + ") could not be added to the user group (" + groupName + "). " +
                         	"Please check the status of the guacamole mysql database.\n\n"));
                 return false;
             }
