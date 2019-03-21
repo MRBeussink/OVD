@@ -15,7 +15,7 @@ namespace test_OVD_clientless.Controllers
         {
 
             /*******************REMOVE FROM IMPLEMENTATION***********************/
-            string groupName = "Test Group 1";
+            string groupName = "Test Group 2";
             string vmChoice = "test_ubuntu";
             int maxVms = 10;
             int minVms = 5;

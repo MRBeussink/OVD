@@ -18,8 +18,8 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         public bool insertConnectionGroup(GroupConfig newGroup, ref List<Exception> exceptions)
         {
             const string queryString =
-                "INSERT INTO guacamole_connection_group (connection_group_name, max_connections, max_connections_per_user) " +
-                "VALUES (@groupname, @maxconnections, @maxuserconnections)";
+                "INSERT INTO guacamole_connection_group (connection_group_name, max_connections, max_connections_per_user, type) " +
+                "VALUES (@groupname, @maxconnections, @maxuserconnections, 'BALANCING')";
 
             Queue<string> argNames = new Queue<string>();
             argNames.Enqueue("@groupname");
@@ -187,10 +187,41 @@ namespace test_OVD_clientless.GuacamoleDatabaseConnectors
         }
 
 
-
+        /// <summary>
+        /// Connects the user group which holds the users to the connection group which holds the
+        /// virtual environments and allows the users to have read access
+        /// </summary>
+        /// <returns><c>true</c>, if the connection and user groups where connected, <c>false</c> otherwise.</returns>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="exceptions">Exceptions.</param>
         public bool insertConnectionGroupIntoUserGroup(string groupName, ref List<Exception> exceptions)
         {
+            const string userGroupIdQueryString =
+                "(SELECT entity_id FROM guacamole_entity " +
+                "WHERE name = @groupname AND type = 'USER_GROUP')";
 
+            const string connectionGroupIdQueryString =
+                "(SELECT connection_group_id FROM guacamole_connection_group " +
+                "WHERE connection_group_name=@groupname)";
+
+            const string memberQueryString =
+                "INSERT INTO guacamole_connection_group_permission (entity_id, connection_group_id, permission) " +
+                "VALUES (" + userGroupIdQueryString + "," + connectionGroupIdQueryString + ", 'READ')";
+
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@groupname");
+
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(groupName);
+
+            //Connect the user group and the connection group
+            if (!insertQuery(memberQueryString, argNames, args, ref exceptions))
+            {
+                exceptions.Add(new UserInitializationException("The group (" + groupName +
+                    ") could not connect its created connection group and user group\n\n."));
+                return false;
+            }
+            return true;
         }
 
 
