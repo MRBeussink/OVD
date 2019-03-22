@@ -60,7 +60,7 @@ namespace OVD.API.Controllers
             Claim nameClaim;
             Claim roleClaim;
 
-            Regex dawgtagRx = new Regex("siu85[0-9]{7}", RegexOptions.Compiled);
+            Regex dawgtagRx = new Regex("[Ss][Ii][Uu]85[0-9]{7}", RegexOptions.Compiled);
 
 
             if (dawgtagRx.IsMatch(userForLoginDto.Username))
