@@ -5,69 +5,72 @@ using test_OVD_clientless.Helpers;
 using test_OVD_clientless.GuacamoleDatabaseConnectors;
 using test_OVD_clientless.ScriptConnectors;
 using test_OVD_clientless.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using OVD.API.Dtos;
 
 namespace test_OVD_clientless.Controllers
 {
-    public class NewGroupController
+    [Authorize]
+    [Route("api/{userId}/groups")]
+    public class GroupsController : ControllerBase
     {
-
-        public void putExample()
+        [HttpPost("create")] 
+        public async Task<IActionResult> CreateUserGroup(String userName, GroupForCreationDto groupForCreationDto)
         {
+            // check that user is admin
+            // if (userId != int.Parse(Admin.FindFirst(ClaimTypes.NameIdentifier).Value))
+                // return Unauthorized();
 
-            /*******************REMOVE FROM IMPLEMENTATION***********************/
-            string groupName = "Test Group 2";
-            string vmChoice = "test_ubuntu";
-            int maxVms = 10;
-            int minVms = 5;
-            int hotspares = 2;
-
-            ICollection<string> dawgtags = new List<string>();
-            dawgtags.Add("siu853401103");
-            /********************************************************************/
-
-            //Objects to be stored into the entity framework database
+            // objects to be stored in the EF database
             GroupConfig group;
             ICollection<VirtualMachine> virtualMachines = new List<VirtualMachine>();
-            List<Exception> exceptions = new List<Exception>(); ;
+            List<Exception> exceptions = new List<Exception>();
 
             //Reformat the given input strings to ensure that the consistancy of
             //the databases is maintained
+
+            String groupName;
+            String vmChoice;
+            
             using (Formatter styler = new Formatter())
             {
-                groupName = styler.formatGroupName(groupName);
-                vmChoice = styler.formatName(vmChoice);
+                groupName = styler.formatGroupName(groupForCreationDto.Name);
+                vmChoice = styler.formatName(groupForCreationDto.VMChoice);
             }
 
-            //Validate the user input provided
             using (Validator checker = new Validator())
             {
                 //Check if the group arguments are proper
                 checker.validateGroupName(groupName, ref exceptions);
                 checker.validateVmChoice(vmChoice, ref exceptions);
-                checker.validateMin(minVms, ref exceptions);
-                checker.validateMax(maxVms, ref exceptions);
-                checker.validateMinMax(minVms, maxVms, ref exceptions);
-                checker.validateHotspares(hotspares, ref exceptions);
+                checker.validateMin(groupForCreationDto.MinVms, ref exceptions);
+                checker.validateMax(groupForCreationDto.MaxVms, ref exceptions);
+                checker.validateMinMax(groupForCreationDto.MinVms, groupForCreationDto.MaxVms, ref exceptions);
+                checker.validateHotspares(groupForCreationDto.NumHotspares, ref exceptions);
 
                 //Check if the dawgtags are proper
-                foreach (string dawgtag in dawgtags)
+                foreach (string dawgtag in groupForCreationDto.Dawgtags)
                 {
                     checker.validateDawgtag(dawgtag, ref exceptions);
                 }
 
                 if (exceptions.Count != 0)
                 {
-                    handleErrors(exceptions);
-                    return; //REMOVE
+                    var message = handleErrors(exceptions);
+                    return BadRequest(message);
                 }
             }
 
             //Initalize the connection group with Guacamole
-            group = initalizeGroup(groupName, maxVms, minVms, hotspares, ref exceptions);
+            group = initalizeGroup(groupName, groupForCreationDto.MaxVms,
+                groupForCreationDto.MinVms, groupForCreationDto.NumHotspares,
+                ref exceptions);
             if (exceptions.Count != 0)
             {
-                handleErrors(exceptions);
-                return; //REMOVE
+                var message = handleErrors(exceptions);
+                return BadRequest(message);
             }
 
             /*//Initalize the virtual machines by calling the required scripts
@@ -88,7 +91,7 @@ namespace test_OVD_clientless.Controllers
 
             //Initalize the users if they do not exist
             //Add the users to the newly created group
-            foreach (string dawgtag in dawgtags)
+            foreach (string dawgtag in groupForCreationDto.Dawgtags)
             {
                 //Add new users into the database
                 bool isInitialized = initalizeUser(dawgtag, ref exceptions);
@@ -101,9 +104,31 @@ namespace test_OVD_clientless.Controllers
             }
             if (exceptions.Count != 0)
             {
-                handleErrors(exceptions);
-                return; //REMOVE
+                var message = handleErrors(exceptions);
+                return BadRequest(message);
             }
+
+            return Ok();
+            // this could return CreatedAtRoute if we need data to be returned
+        }
+        
+        [HttpPut("addUsers")]
+        public async Task<IActionResult> AddUsersToGroup(String userName, String groupName, IList<String> usersToAdd)
+        {
+            return BadRequest("This had not been implemented yet");
+        }
+
+
+        [HttpPut("removeUsers/{groupName}")]
+        public async Task<IActionResult> RemoveUsersToGroup(String userName, String groupName, IList<String> usersToRemove)
+        {
+            return BadRequest("This had not been implemented yet");
+        }
+
+        [HttpDelete("delete/{groupName}")]
+        public async Task<IActionResult> DeleteGroup(String userName, String groupName)
+        {
+            return BadRequest("This had not been implemented yet");
         }
 
 
@@ -115,7 +140,7 @@ namespace test_OVD_clientless.Controllers
         /// <param name="maxVms">Max vms.</param>
         /// <param name="minVms">Minimum vms.</param>
         /// <param name="hotspares">Hotspares.</param>
-        public GroupConfig initalizeGroup(string groupName, int maxVms, int minVms, int hotspares, ref List<Exception> exceptions)
+        private GroupConfig initalizeGroup(string groupName, int maxVms, int minVms, int hotspares, ref List<Exception> exceptions)
         {
             GroupConfig group = new GroupConfig
             {
@@ -161,7 +186,7 @@ namespace test_OVD_clientless.Controllers
         /// <param name="groupName">Group name.</param>
         /// <param name="vmChoice">Vm choice.</param>
         /// <param name="exceptions">Exceptions.</param>
-        public VirtualMachine initalizeVm(string groupName, string vmChoice, ref List<Exception> exceptions)
+        private VirtualMachine initalizeVm(string groupName, string vmChoice, ref List<Exception> exceptions)
         {
             ScriptVmCreator creator = new ScriptVmCreator();
             ScriptVmStarter starter = new ScriptVmStarter();
@@ -210,7 +235,7 @@ namespace test_OVD_clientless.Controllers
         /// </summary>
         /// <returns><c>true</c>, if user was added to guacamole, <c>false</c> otherwise.</returns>
         /// <param name="dawgtag">Dawgtag.</param>
-        public bool initalizeUser(string dawgtag, ref List<Exception> exceptions)
+        private bool initalizeUser(string dawgtag, ref List<Exception> exceptions)
         {
             GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
             GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
@@ -261,13 +286,17 @@ namespace test_OVD_clientless.Controllers
         /// Sends any recieved errors back to the client.
         /// </summary>
         /// <param name="exceptions">Exceptions.</param>
-        public void handleErrors(List<Exception> exceptions)
+        public String handleErrors(List<Exception> exceptions)
         {
+            String exceptionMessage = "";
+
             foreach (Exception e in exceptions)
             {
-                Console.Error.Write(e.Message);
+                // Console.Error.Write(e.Message);
+                exceptionMessage += e;
             }
-            //SEND BACK ERROR MESSAGES
+
+            return exceptionMessage;
         }
     }
 }

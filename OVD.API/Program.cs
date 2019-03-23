@@ -8,8 +8,8 @@ namespace test_OVD_clientless
     {
         static void Main(string[] args)
         {
-            NewGroupController controller = new NewGroupController();
-            controller.putExample();
+            GroupsController controller = new GroupsController();
+            // controller.putExample();
         }
     }
 }
