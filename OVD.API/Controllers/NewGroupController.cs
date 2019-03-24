@@ -118,6 +118,11 @@ namespace test_OVD_clientless.Controllers
         [HttpPut("addUsers")]
         public async Task<IActionResult> AddUsersToGroup(String userName, String groupName, IList<String> usersToAdd)
         {
+
+            // check that user is admin
+            // if (userId != int.Parse(Admin.FindFirst(ClaimTypes.NameIdentifier).Value))
+                // return Unauthorized();
+
             // ini
             List<Exception> exceptions = new List<Exception>();
             List<String> dawgtagsToInitialize = new List<String>();
@@ -156,7 +161,7 @@ namespace test_OVD_clientless.Controllers
                 }
 
                 // add initialized users into group
-                inserter.insertUserIntoUserGroup(dawgtag, groupName, ref exceptions);
+                addUserToUserGroup(dawgtag, groupName, ref exceptions);
 
                 if (exceptions.Count != 0) 
                 {
@@ -171,7 +176,12 @@ namespace test_OVD_clientless.Controllers
         [HttpPut("removeUsers/{groupName}")]
         public async Task<IActionResult> RemoveUsersToGroup(String userName, String groupName, IList<String> usersToRemove)
         {
-            return BadRequest("This had not been implemented yet");
+            // check that user is admin
+            // if (userId != int.Parse(Admin.FindFirst(ClaimTypes.NameIdentifier).Value))
+                // return Unauthorized();
+
+            return BadRequest("This hasn't been implemented yet.");
+            
         }
 
         // !SECTION 
@@ -179,7 +189,20 @@ namespace test_OVD_clientless.Controllers
         [HttpDelete("delete/{groupName}")]
         public async Task<IActionResult> DeleteGroup(String userName, String groupName)
         {
-            return BadRequest("This had not been implemented yet");
+
+            // check that user is admin
+            // if (userId != int.Parse(Admin.FindFirst(ClaimTypes.NameIdentifier).Value))
+                // return Unauthorized();
+
+            List<Exception> exceptions = new List<Exception>();
+
+            if (!removeGroup(groupName, ref exceptions))
+            {
+                var message = handleErrors(exceptions);
+                return BadRequest(message);
+            }
+
+            return Ok();
         }
 
 
