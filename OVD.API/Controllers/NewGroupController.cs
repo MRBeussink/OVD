@@ -16,6 +16,9 @@ namespace test_OVD_clientless.Controllers
     [Route("api/{userId}/groups")]
     public class GroupsController : ControllerBase
     {
+
+        // SECTION  HTTP POST and PUT methods
+
         [HttpPost("create")] 
         public async Task<IActionResult> CreateUserGroup(String userName, GroupForCreationDto groupForCreationDto)
         {
@@ -109,13 +112,59 @@ namespace test_OVD_clientless.Controllers
             }
 
             return Ok();
-            // this could return CreatedAtRoute if we need data to be returned
+            // NOTE this could return CreatedAtRoute if we need data to be returned
         }
         
         [HttpPut("addUsers")]
         public async Task<IActionResult> AddUsersToGroup(String userName, String groupName, IList<String> usersToAdd)
         {
-            return BadRequest("This had not been implemented yet");
+            // ini
+            List<Exception> exceptions = new List<Exception>();
+            List<String> dawgtagsToInitialize = new List<String>();
+
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+
+            // check that group exists
+            if (!searcher.searchGroupName(groupName, ref exceptions))
+                return BadRequest("No group with that group name exists");
+
+            if (exceptions.Count != 0)
+            {
+                var message = handleErrors(exceptions);
+                return BadRequest(message);
+            }
+
+            foreach (String dawgtag in usersToAdd)
+            {
+                // initialize any users not already in the database
+                if (!searcher.searchUserName(dawgtag, ref exceptions))
+                {
+                    if (exceptions.Count != 0) 
+                    {
+                        var message = handleErrors(exceptions);
+                        return BadRequest(message);
+                    }
+
+                    initalizeUser(dawgtag, ref exceptions);
+
+                    if (exceptions.Count != 0) 
+                    {
+                        var message = handleErrors(exceptions);
+                        return BadRequest(message);
+                    }
+                }
+
+                // add initialized users into group
+                inserter.insertUserIntoUserGroup(dawgtag, groupName, ref exceptions);
+
+                if (exceptions.Count != 0) 
+                {
+                    var message = handleErrors(exceptions);
+                    return BadRequest(message);
+                }
+            }
+            return Ok();
         }
 
 
@@ -125,12 +174,16 @@ namespace test_OVD_clientless.Controllers
             return BadRequest("This had not been implemented yet");
         }
 
+        // !SECTION 
+
         [HttpDelete("delete/{groupName}")]
         public async Task<IActionResult> DeleteGroup(String userName, String groupName)
         {
             return BadRequest("This had not been implemented yet");
         }
 
+
+        // ANCHOR Private methods
 
         /// <summary>
         /// Initalizes the a new connection group.
