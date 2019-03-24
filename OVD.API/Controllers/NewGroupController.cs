@@ -335,6 +335,35 @@ namespace test_OVD_clientless.Controllers
         }
 
 
+	/// <summary>
+        /// Removes the connection and user groups associated with the group name.
+        /// </summary>
+        /// <returns><c>true</c>, if group was removed, <c>false</c> otherwise.</returns>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool removeGroup(string groupName, ref List<Exception> exceptions)
+        {
+            GuacamoleDatabaseDeleter deleter = new GuacamoleDatabaseDeleter();
+            //Remove the user group from the database
+            if(!deleter.deleteUserGroup(groupName, ref exceptions))
+            {
+                exceptions.Add(new GroupDeletionException("The user group with the name (" +
+                    groupName + ") could not be removed from the database.\n\n"));
+                return false;
+            }
+
+            //Remove the group of connections from the database
+            if (!deleter.deleteConnectionGroup(groupName, ref exceptions))
+            {
+                exceptions.Add(new GroupDeletionException("The connection group with the name (" +
+                    groupName + ") could not be removed from the database.\n\n"));
+                return false;
+            }
+
+            return true;
+        }
+
+
         /// <summary>
         /// Sends any recieved errors back to the client.
         /// </summary>
