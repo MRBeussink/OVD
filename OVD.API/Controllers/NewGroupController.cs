@@ -263,10 +263,6 @@ namespace OVD.API.Controllers
                 baseBox = vmChoice
             };
 
-            //Create the new virtual machine and start it
-            creator.cloneVm(vmName, vmChoice);
-            starter.startVm(vmName);
-
             //Add the new vm to guacamole
             if (!inserter.insertVm(vmName, vmChoice, ref exceptions))
             {
