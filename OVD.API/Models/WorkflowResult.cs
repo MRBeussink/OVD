@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace test_OVD_clientless.Models
+namespace OVD.API.Models
 {
     public class WorkflowResult
     {
