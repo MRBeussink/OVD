@@ -241,8 +241,6 @@ namespace OVD.API.Controllers
         /// <param name="exceptions">Exceptions.</param>
         private VirtualMachine initalizeVm(string groupName, string vmChoice, ref List<Exception> exceptions)
         {
-            ScriptVmCreator creator = new ScriptVmCreator();
-            ScriptVmStarter starter = new ScriptVmStarter();
             GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
             string vmName = string.Empty;
 
