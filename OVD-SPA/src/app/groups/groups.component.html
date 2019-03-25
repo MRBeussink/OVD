@@ -1,0 +1,329 @@
+<h3>Initial Design</h3>
+<div class="container mt-3">
+  <div class="col-md-8 h-100 justify-content-center">
+    <div class="row border-bottom border-secondary">
+      <div class="col-md-5 text-center">Group Name</div>
+      <div class="col-md-2 text-center">Active VMs</div>
+      <div class="col-md-2 text-center">Running VMs</div>
+      <div class="col-md-2 text-center">Offline VMs</div>
+      <div class="col-md-1 text-center">Select</div>
+    </div>
+    <div class="row py-1">
+        <div class="col-md-5">Sample</div>
+        <div class="col-md-2 text-center">5</div>
+        <div class="col-md-2 text-center">8</div>
+        <div class="col-md-2 text-center">2</div>
+        <div class="col-md-1 text-center"><input type="checkbox" /></div>
+    </div>
+    <div class="row py-1">
+        <div class="col-md-5">Other Group</div>
+        <div class="col-md-2 text-center">1</div>
+        <div class="col-md-2 text-center">10</div>
+        <div class="col-md-2 text-center">5</div>
+        <div class="col-md-1 text-center"><input type="checkbox" /></div>
+    </div>
+    <div class="row py-1">
+        <div class="col-md-5">CS 499 Testing Environment</div>
+        <div class="col-md-2 text-center">233</div>
+        <div class="col-md-2 text-center">250</div>
+        <div class="col-md-2 text-center">50</div>
+        <div class="col-md-1 text-center"><input type="checkbox" /></div>
+    </div>
+    <div class="row pt-2">
+        <div class="col-md-3"><div></div></div>
+        <div class="col-md-2">
+            <div>
+                <input class="button" type="button" value="Create" [routerLink]="['/new']" />
+            </div>
+        </div>
+        <div class="col-md-2"><div></div></div>
+        <div class="col-md-2">
+          <div>
+            <input class="button" type="button" value="Delete" />
+            </div>
+        </div>
+        <div class="col-md-3"><div></div></div>
+    </div>
+  </div>
+</div>
+
+<!--
+<h3>Ice Box Version</h3>
+
+<div class="container mt-3">
+  <div class="col-md-8 h-100 justify-content-center">
+
+    <div class="row py-1">
+      <div class="col-md-6 my-auto">
+        Sample
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="my-0">
+          5 / 8
+        </p>
+        <p class="my-0">2</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+        <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+      </div>
+    </div>
+
+      <div class="row py-1">
+          <div class="col-md-6 my-auto">
+              Other Group
+            </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0">
+              1 / 10
+            </p>
+            <p class="my-0">5</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+        <div class="row py-1">
+          <div class="col-md-6 my-auto">
+              CS 499 Testing Environment
+            </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0">
+              233 / 250
+            </p>
+            <p class="my-0">50</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+  </div>
+</div>
+
+<h3>With Shitty Labels</h3>
+
+<div class="container mt-3">
+  <div class="col-md-8 h-100 justify-content-center">
+
+    <div class="row py-1">
+      <div class="col-md-6 my-auto">
+        Sample
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="my-0">
+          Using: 5 / 8
+        </p>
+        <p class="my-0">Offline: 2</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+        <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+      </div>
+    </div>
+
+      <div class="row py-1">
+          <div class="col-md-6 my-auto">
+              Other Group
+            </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0">
+              Using: 1 / 10
+            </p>
+            <p class="my-0">Offline: 5</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+        <div class="row py-1">
+          <div class="col-md-6 my-auto">
+              CS 499 Testing Environment
+            </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0">
+              Using: 233 / 250
+            </p>
+            <p class="my-0">Offline: 50</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+  </div>
+</div>
+
+
+<h3>With Aligned Shitty Labels</h3>
+
+<div class="container mt-3">
+  <div class="col-md-8 h-100 justify-content-center">
+
+    <div class="row py-1">
+      <div class="col-md-5 my-auto">
+        Sample
+      </div>
+      <div class="col-md-2 text-right">
+        <p class="my-0">
+          Using:
+        </p>
+        <p class="my-0">
+          Offline:
+        </p>
+      </div>
+      <div class="col-md-2 text-left">
+        <p class="my-0">
+          5 / 8
+        </p>
+        <p class="my-0">2</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+        <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+      </div>
+    </div>
+
+      <div class="row py-1">
+          <div class="col-md-5 my-auto">
+              Other Group
+            </div>
+            <div class="col-md-2 text-right">
+                <p class="my-0">
+                  Using:
+                </p>
+                <p class="my-0">
+                  Offline:
+                </p>
+              </div>
+          <div class="col-md-2 text-left">
+            <p class="my-0">
+              1 / 10
+            </p>
+            <p class="my-0">5</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+        <div class="row py-1">
+          <div class="col-md-5 my-auto">
+              CS 499 Testing Environment
+            </div>
+            <div class="col-md-2 text-right">
+                <p class="my-0">
+                  Using:
+                </p>
+                <p class="my-0">
+                  Offline:
+                </p>
+              </div>
+          <div class="col-md-2 text-left">
+            <p class="my-0">
+              233 / 250
+            </p>
+            <p class="my-0">50</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+  </div>
+</div>
+
+-->
+
+<h3>Shitty Aligned Labels with Real Buttons</h3>
+
+<div class="container mt-3">
+  <div class="col-md-8 h-100 justify-content-center">
+
+    <div class="row py-1">
+      <div class="col-md-5 my-auto">
+        Sample
+      </div>
+      <div class="col-md-2 text-right">
+        <p class="my-0">
+          Using:
+        </p>
+        <p class="my-0">
+          Offline:
+        </p>
+      </div>
+      <div class="col-md-3 text-left">
+        <p class="my-0">
+          5 / 8
+        </p>
+        <p class="my-0">2</p>
+      </div>
+      
+      <div class="col-md-2 my-auto">
+        <div class="my-auto btn-group">
+          <button type="button" class="btn btn-info btn-sm">Edit</button>
+          <button type="button" class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+    </div>
+
+      <div class="row py-1">
+          <div class="col-md-5 my-auto">
+              Other Group
+            </div>
+            <div class="col-md-2 text-right">
+                <p class="my-0">
+                  Using:
+                </p>
+                <p class="my-0">
+                  Offline:
+                </p>
+              </div>
+          <div class="col-md-2 text-left">
+            <p class="my-0">
+              1 / 10
+            </p>
+            <p class="my-0">5</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+        <div class="row py-1">
+          <div class="col-md-5 my-auto">
+              CS 499 Testing Environment
+            </div>
+            <div class="col-md-2 text-right">
+                <p class="my-0">
+                  Using:
+                </p>
+                <p class="my-0">
+                  Offline:
+                </p>
+              </div>
+          <div class="col-md-2 text-left">
+            <p class="my-0">
+              233 / 250
+            </p>
+            <p class="my-0">50</p>
+          </div>
+          <div class="col-md-3 text-center">
+            <p class="my-0 custom-btn" style="cursor: pointer">Edit</p>
+            <p class="my-0 custom-btn" style="cursor: pointer">Delete</p>
+          </div>
+        </div>
+
+  </div>
+</div>
+      
+
