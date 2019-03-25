@@ -1,5 +1,5 @@
 ﻿using System;
-namespace test_OVD_clientless.Exceptions
+namespace OVD.API.Exceptions
 {
     public class GroupDeletionException : Exception
     {

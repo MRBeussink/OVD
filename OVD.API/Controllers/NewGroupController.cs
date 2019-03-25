@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using test_OVD_clientless.Models;
-using test_OVD_clientless.Helpers;
-using test_OVD_clientless.GuacamoleDatabaseConnectors;
-using test_OVD_clientless.ScriptConnectors;
-using test_OVD_clientless.Exceptions;
+using OVD.API.Models;
+using OVD.API.Helpers;
+using OVD.API.GuacamoleDatabaseConnectors;
+using OVD.API.ScriptConnectors;
+using OVD.API.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using OVD.API.Dtos;
 
-namespace test_OVD_clientless.Controllers
+namespace OVD.API.Controllers
 {
     [Authorize]
     [Route("api/{userId}/groups")]

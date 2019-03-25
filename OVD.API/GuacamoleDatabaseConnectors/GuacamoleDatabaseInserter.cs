@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using test_OVD_clientless.Models;
-using test_OVD_clientless.Exceptions;
+using OVD.API.Models;
+using OVD.API.Exceptions;
 
-namespace test_OVD_clientless.GuacamoleDatabaseConnectors
+namespace OVD.API.GuacamoleDatabaseConnectors
 {
     public class GuacamoleDatabaseInserter
     {

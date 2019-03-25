@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-namespace test_OVD_clientless.GuacamoleDatabaseConnectors
+namespace OVD.API.GuacamoleDatabaseConnectors
 {
     public class GuacamoleDatabaseConnector : IDisposable
     {

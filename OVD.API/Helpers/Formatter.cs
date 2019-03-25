@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using test_OVD_clientless.GuacamoleDatabaseConnectors;
+using OVD.API.GuacamoleDatabaseConnectors;
 
-namespace test_OVD_clientless.Helpers
+namespace OVD.API.Helpers
 {
     public class Formatter : IDisposable
     {

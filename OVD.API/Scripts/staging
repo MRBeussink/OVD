@@ -1,0 +1,2 @@
+[testgroup]
+test ansible_user=vagrant

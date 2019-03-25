@@ -1,0 +1,5 @@
+- name: ensure legacy desktop packages
+  apt: pkg={{ item }} update_cache=yes state=latest install_recommends=no
+  with_items:
+    - freerdp-x11
+  become: yes

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace test_OVD_clientless.ScriptConnectors
+namespace OVD.API.ScriptConnectors
 {
     public class ScriptExecutor
     {

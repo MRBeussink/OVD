@@ -1,0 +1,6 @@
+---
+- hosts: test
+#- hosts: all
+  become: true
+  roles:
+    - common

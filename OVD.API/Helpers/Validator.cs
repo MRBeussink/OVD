@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using test_OVD_clientless.GuacamoleDatabaseConnectors;
-using test_OVD_clientless.Exceptions;
+using OVD.API.GuacamoleDatabaseConnectors;
+using OVD.API.Exceptions;
 using System.Collections.Generic;
 
-namespace test_OVD_clientless.Helpers
+namespace OVD.API.Helpers
 {
     public class Validator : IDisposable
     {
