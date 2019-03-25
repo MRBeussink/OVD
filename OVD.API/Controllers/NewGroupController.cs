@@ -182,6 +182,28 @@ namespace OVD.API.Controllers
             return BadRequest("This had not been implemented yet");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetGroups(String userId) 
+        {
+            // check that user is admin
+            // if (userId != int.Parse(Admin.FindFirst(ClaimTypes.NameIdentifier).Value))
+                // return Unauthorized();
+
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+
+            List<Exception> exceptions = new List<Exception>();
+
+            Queue<String> groupsQueue = searcher.getAllGroupNames(ref exceptions);
+
+            if (exceptions.Count != 0) 
+            {
+                var message = handleErrors(exceptions);
+                return BadRequest(message);
+            }
+
+            return Ok(groupsQueue.ToArray());
+        }
+
 
         // ANCHOR Private methods
 
