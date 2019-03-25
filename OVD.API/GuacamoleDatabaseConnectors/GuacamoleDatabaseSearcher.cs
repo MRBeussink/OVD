@@ -87,6 +87,21 @@ namespace OVD.API.GuacamoleDatabaseConnectors
 
 
         /// <summary>
+        /// Gets all group names.
+        /// </summary>
+        /// <returns>The all group names.</returns>
+        /// <param name="exceptions">Exceptions.</param>
+        public Queue<string> getAllGroupNames(ref List<Exception> exceptions)
+        {
+            const string queryString =
+                "SELECT connection_group_name FROM guacamole_connection_group";
+
+            Queue<string> queryResults = searchQuery(queryString, null, ref exceptions);
+            return queryResults;
+        }
+
+
+        /// <summary>
         /// General format for running a search query on the guacamole database
         /// </summary>
         /// <returns><c>true</c>, if field was found, <c>false</c> otherwise.</returns>
