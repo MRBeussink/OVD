@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { GroupService } from '../_services/group.service';
+import { AuthService } from '../_services/auth.service';
 
 @Component({
   selector: 'app-groups',
@@ -7,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GroupsComponent implements OnInit {
 
-  constructor() { }
+  constructor(public groupService: GroupService, public authService: AuthService) { }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  getGroupsAlphabetical() {
+    return this.groupService.groups;
+  }
+
+  remove(group_name: String) {
+    this.groupService.delete(group_name);
   }
 
 }
