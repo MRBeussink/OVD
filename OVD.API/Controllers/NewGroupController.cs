@@ -12,7 +12,7 @@ using OVD.API.Dtos;
 
 namespace OVD.API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [Route("api/{userId}/groups")]
     public class GroupsController : ControllerBase
     {
