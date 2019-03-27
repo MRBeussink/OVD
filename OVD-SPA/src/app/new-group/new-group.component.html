@@ -40,9 +40,7 @@
     </div>
     <div class="row pb-2">
       <select class="form-control" name="image" [(ngModel)]="model.image">
-        <option>ISO 1</option>
-        <option>ISO 2</option>
-        <option>ISO 3</option>
+        <option *ngFor="let image of getImages()">{{image}}</option>
       </select>
     </div>
     <div class="row pt-2">

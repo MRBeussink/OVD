@@ -34,4 +34,8 @@ export class NewGroupComponent implements OnInit {
     this.model.dawgtag = '';
   }
 
+  getImages() {
+     return this.groupService.getImages();
+  }
+
 }
