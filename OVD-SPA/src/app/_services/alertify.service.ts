@@ -20,13 +20,9 @@ confirm(message: string, okCallback: () => any) {
 newGroup() {
   alertify.prompt(
     'New Group',
-    'Group Name', 'name',
-    'Hot Spares', 'spares',
-    'Total VMs', 'total',
-    'Image', 'image',
-    'Users', 'user'
+    'Group Name', 'name'
   , function(evt, value) {
-    console.log(name + spares + total + image + user);
+    console.log(name);
   }
   , function() { });
 }
