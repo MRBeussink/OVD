@@ -1,6 +1,20 @@
-<p>
-  This page will probably be left blank.
-</p>
-<p>
-  Though, this could serve as an about, or some kind of direction to log in or we could be more like Microsoft and throw obnoxious pictures of nature around here.
-</p>
+<div class="container h-100 w-25 mt-5">
+  
+  <div class="h-100 justify-content-center">
+      <form #loginForm="ngForm" (ngSubmit)="login()">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Username</label>
+            <input type="text" class="form-control" name="username" placeholder="Username"
+            required [(ngModel)]="model.username">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" name=password placeholder="Password"
+            required [(ngModel)]="model.password" >
+          </div>
+          <button [disabled]="!loginForm.valid" type="submit" class="btn btn-success">Login</button>
+        </form>
+  </div>
+  
+</div>
+
