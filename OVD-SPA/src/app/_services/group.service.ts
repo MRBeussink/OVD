@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../_services/auth.service';
 import { environment } from '../../environments/environment';
-import { GroupsComponent } from '../groups/groups.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
-  baseUrl = environment.apiURL + 'realadmin' + '/NewGroup/';
+  baseUrl = environment.apiURL + 'realadmin' + '/groups/create';
   activeGroup = '';
   editType = '';
   groups = new Map();
@@ -16,6 +15,9 @@ export class GroupService {
 
   constructor(private http: HttpClient, public authService: AuthService) {
     // These are hard coded samples, remove these for the final product
+    this.http.get(this.baseUrl).forEach(element => {
+      this.groups.set(element, [3, 8, 2]);
+    });
     this.groups.set('Name', [3, 8, 2]);
     this.groups.set('Sample', [5, 7, 3]);
     this.groups.set('CS499 Test Group', [250, 300, 50]);
