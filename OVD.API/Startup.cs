@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OVD.API.Data;
-// using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace OVD.API
 {
@@ -33,12 +33,12 @@ namespace OVD.API
         {
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            // services.AddDbContext<DataContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
-            //     mySqlOptions =>
-            //     {
-            //         mySqlOptions.ServerVersion(new Version(8, 0, 15), ServerType.MySql); 
-            //     }
-            // ));
+            services.AddDbContext<DataContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+                mySqlOptions =>
+                {
+                    mySqlOptions.ServerVersion(new Version(8, 0, 15), ServerType.MySql); 
+                }
+            ));
             services.AddCors();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
