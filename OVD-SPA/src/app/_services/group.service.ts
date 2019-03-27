@@ -9,12 +9,14 @@ import { environment } from '../../environments/environment';
 export class GroupService {
   baseUrl = environment.apiURL + 'realadmin' + '/NewGroup/';
   groups = new Map();
+  images = [];
 
   constructor(private http: HttpClient, public authService: AuthService) {
     // These are hard coded samples, remove these for the final product
     this.groups.set('Name', [3, 8, 2]);
     this.groups.set('Sample', [5, 7, 3]);
     this.groups.set('CS499 Test Group', [250, 300, 50]);
+    this.images = ['Ubusoft', 'Macrosoft Winders', 'Orangintosh X', 'Debster', 'Commodore 64'];
   }
 
 create(model: any) {
@@ -36,6 +38,10 @@ delete(group: String) {
 getGroups() {
   console.log(this.http.get(this.baseUrl));
   return this.groups;
+}
+
+getImages() {
+  return this.images;
 }
 
 }
