@@ -21,6 +21,7 @@ export class NavComponent implements OnInit {
   // Pass the credentials to the api to attempt a login
   // The redirects if successful
   login() {
+    /*
     this.authService.login(this.model).subscribe(next => { // What to do when successful
 
     }, error => { // What to do on error
@@ -33,7 +34,7 @@ export class NavComponent implements OnInit {
         this.router.navigate(['']);
       }
     });
-
+*/
     // Clear login form
     this.model.username = '';
     this.model.password = '';
