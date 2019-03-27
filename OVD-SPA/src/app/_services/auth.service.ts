@@ -28,6 +28,7 @@ login(model: any) {
       }
     })
   ); */
+  return true;
 }
 
 loggedIn() {
