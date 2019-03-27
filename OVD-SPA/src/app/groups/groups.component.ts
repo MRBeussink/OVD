@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GroupService } from '../_services/group.service';
 import { AuthService } from '../_services/auth.service';
+import { AlertifyService } from '../_services/alertify.service';
 
 @Component({
   selector: 'app-groups',
@@ -9,7 +10,7 @@ import { AuthService } from '../_services/auth.service';
 })
 export class GroupsComponent implements OnInit {
 
-  constructor(public groupService: GroupService, public authService: AuthService) { }
+  constructor(public groupService: GroupService, public authService: AuthService, public alertifyService: AlertifyService) { }
 
   ngOnInit() {}
 
@@ -17,8 +18,14 @@ export class GroupsComponent implements OnInit {
     return this.groupService.groups;
   }
 
-  remove(group_name: String) {
-    this.groupService.delete(group_name);
+  remove(group_name: string) {
+    this.alertifyService.confirm('Are you sure you want to delete the ' + group_name + ' group?', () => {
+      this.groupService.delete(group_name);
+    });
+  }
+
+  create() {
+    this.alertifyService.newGroup();
   }
 
 }

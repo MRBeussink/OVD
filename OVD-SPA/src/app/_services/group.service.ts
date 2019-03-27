@@ -13,9 +13,9 @@ export class GroupService {
 
   constructor(private http: HttpClient, public authService: AuthService) {
     // These are hard coded samples, remove these for the final product
-    this.groups.set('Name', [3, 8, 2]);
-    this.groups.set('Sample', [5, 7, 3]);
-    this.groups.set('CS499 Test Group', [250, 300, 50]);
+    this.groups.set('Name', [0, 0, 0]);
+    this.groups.set('Sample', [0, 0, 0]);
+    this.groups.set('CS499 Test Group', [0, 0, 0]);
     this.images = ['Ubusoft', 'Macrosoft Winders', 'Orangintosh X', 'Debster', 'Commodore 64'];
   }
 
@@ -25,7 +25,7 @@ create(model: any) {
   if (this.groups.has(model.group_name)) {
     return false;
   }
-  this.groups.set(model.group_name, [0, 10, 3]);
+  this.groups.set(model.group_name, [0, 0, 0]);
   return true;
 }
 
