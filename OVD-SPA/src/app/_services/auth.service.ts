@@ -16,6 +16,7 @@ constructor(private http: HttpClient) { }
 
 login(model: any) {
   // Call the api to log in with passed credentials
+  /*
   return this.http.post(this.baseUrl + 'login', model).pipe(
     // Grab the token that was returned if the login was successful
     map((response: any) => {
@@ -26,12 +27,14 @@ login(model: any) {
         this.decodedToken = this.jwtHelper.decodeToken(user.token);
       }
     })
-  );
+  ); */
 }
 
 loggedIn() {
+  /*
   const token = localStorage.getItem('token');
-  return !this.jwtHelper.isTokenExpired(token);
+  return !this.jwtHelper.isTokenExpired(token); */
+  return true;
 }
 
 isAdmin() {
