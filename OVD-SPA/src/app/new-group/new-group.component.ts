@@ -13,6 +13,7 @@ export class NewGroupComponent implements OnInit {
   constructor(public groupService: GroupService, private router: Router) { }
 
   ngOnInit() {
+    // this.model = this.groupService.getGroup(this.groupService.activeGroup);
   }
 
   create() {

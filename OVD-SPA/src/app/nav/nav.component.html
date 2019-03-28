@@ -3,18 +3,18 @@
     <a class="navbar-brand" [routerLink]="['/dashboard']">OVD</a>
 
     <ul *ngIf="isAdmin()" class="navbar-nav mr-auto" >
-      <li class="nav-item" routerLinkActive="active">
+      <!-- <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/dashboard']">Dashboard</a>
-      </li>
+      </li> -->
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/groups']">Groups</a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <!-- <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/sessions']">Sessions</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/settings']">Settings</a>
-      </li>
+      </li> -->
     </ul>
 
   <div *ngIf="loggedIn()" class="dropdown" dropdown dropdownToggle>

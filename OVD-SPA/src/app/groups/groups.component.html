@@ -1,19 +1,13 @@
-<!--
-  <div class="alert alert-danger alert-dismissible">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <strong>Error!</strong> Andy wrote a bad script and the group wasn't deleted as a result.
-</div> 
--->
 <div class="container mt-4">
-  <button type="button" class="btn btn-success btn-md ml-auto" (click)="create()">Create</button>
+  <button type="button" class="btn btn-success btn-md ml-auto" [routerLink]="['/new']">Create</button>
 </div>
 
 <div class="container h-100 mt-2">
   <div class="h-100 justify-content-center">
 
-    <div class="row py-1" *ngFor="let group of getGroupsAlphabetical() | keyvalue">
+    <div class="row py-1" *ngFor="let group of getGroupsAlphabetical()">
       <div class="col-md-4 col-sm-3 col-7 my-auto">
-        {{ group.key }}
+        {{ group.name }}
       </div>
       <div class="col-md-3 d-none d-md-block col-0 text-right">
         <p class="my-0">
@@ -25,14 +19,14 @@
       </div>
       <div class="col-md-2 col-sm-4 d-none d-sm-block col-0 text-left">
         <p class="my-0">
-          {{ group.value[0] }} / {{ group.value[1] }}
+          {{ group.active }} / {{ group.online }}
         </p>
-        <p class="my-0">{{ group.value[2] }}</p>
+        <p class="my-0">{{ group.total - group.online }}</p>
       </div>
       
       <div class="col-md-3 col-sm-5 col-5 my-auto">
-        <button type="button" class="btn btn-info btn-sm col-md-5 col-4 mr-1">Edit</button>
-        <button type="button" class="btn btn-danger btn-sm col-md-5 col-4" (click)="remove(group.key)">Delete</button>
+        <button type="button" class="btn btn-info btn-sm col-md-5 col-4 mr-1" (click)="edit(group.name)" [routerLink]="['/edit']">Edit</button>
+        <button type="button" class="btn btn-danger btn-sm col-md-5 col-4" (click)="remove(group.name)">Delete</button>
       </div>
     </div>
 

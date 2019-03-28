@@ -15,17 +15,18 @@ export class GroupsComponent implements OnInit {
   ngOnInit() {}
 
   getGroupsAlphabetical() {
-    return this.groupService.groups;
+    return this.groupService.getGroups();
   }
 
   remove(group_name: string) {
     this.alertifyService.confirm('Are you sure you want to delete the ' + group_name + ' group?', () => {
       this.groupService.delete(group_name);
+      this.getGroupsAlphabetical();
     });
   }
 
-  create() {
-    this.alertifyService.newGroup();
+  edit(groupName: string) {
+    this.groupService.activateGroup(groupName);
   }
 
 }

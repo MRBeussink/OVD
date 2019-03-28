@@ -17,6 +17,7 @@ import { SessionsComponent } from './sessions/sessions.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserComponent } from './user/user.component';
 import { NewGroupComponent } from './new-group/new-group.component';
+import { EditGroupComponent } from './edit-group/edit-group.component';
 
 @NgModule({
    declarations: [
@@ -28,7 +29,8 @@ import { NewGroupComponent } from './new-group/new-group.component';
       SessionsComponent,
       SettingsComponent,
       UserComponent,
-      NewGroupComponent
+      NewGroupComponent,
+      EditGroupComponent
    ],
    imports: [
       BrowserModule,

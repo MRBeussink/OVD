@@ -1,6 +1,6 @@
 <div class="container mt-3">
-  <form class="col-md-4 h-100 justify-content-center" #newGroupForm="ngForm" (ngSubmit)="create()">
-    <legend class="text-center">Create Group</legend>
+  <form class="col-md-4 h-100 justify-content-center" #editGroupForm="ngForm" (ngSubmit)="edit()">
+    <legend class="text-center">Edit Group</legend>
     <div class="row pt-2">
       <label for="name">Group Name</label>
     </div>
@@ -10,7 +10,7 @@
         class="form-control"
         name="name"
         required
-        [(ngModel)]="model.name"
+        [(ngModel)]="activeGroup.name"
         placeholder="Group Name"
       />
     </div>
@@ -25,7 +25,7 @@
         class="col-md-5 form-control"
         name="total"
         required
-        [(ngModel)]="model.total"
+        [(ngModel)]="activeGroup.total"
         placeholder="Total VMs"
       />
       <div class="col-md-2"></div>
@@ -34,7 +34,7 @@
         class="col-md-5 form-control"
         name="hotspares"
         required
-        [(ngModel)]="model.hotspares"
+        [(ngModel)]="activeGroup.hotspares"
         placeholder="Hotspares"
       />
     </div>
@@ -42,7 +42,7 @@
       <label for="image">VM Image</label>
     </div>
     <div class="row pb-2">
-      <select class="form-control" name="image" required [(ngModel)]="model.image">
+      <select class="form-control" name="image" required [(ngModel)]="activeGroup.image">
         <option *ngFor="let image of getImages()">{{image}}</option>
       </select>
     </div>
@@ -53,7 +53,7 @@
       <textarea
         class="form-control"
         name="dawgtags"
-        [(ngModel)]="model.dawgtags"
+        [(ngModel)]="activeGroup.dawgtags"
         rows="8"
         placeholder="Dawgtags"
       ></textarea>
@@ -69,7 +69,7 @@
         Cancel
       </button>
       <div class="col-md-4"></div>
-      <button [disabled]="!newGroupForm.valid" type="submit" class="btn btn-success col-md-3">Create</button>
+      <button [disabled]="!editGroupForm.valid" type="submit" class="btn btn-success col-md-3">Save</button>
       <div class="col-md-1"></div>
     </div>
   </form>
