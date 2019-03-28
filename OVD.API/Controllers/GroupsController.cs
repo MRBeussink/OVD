@@ -19,7 +19,7 @@ namespace OVD.API.Controllers
 		// 	"dawgtags": ["SIU853249208", "SIU853249209"]
 		// }
         [HttpPost("create")]
-        public async Task<IActionResult> createGroup(GroupDto groupDto)
+        public async Task<IActionResult> createGroup(GroupForCreationDto groupDto)
         {
         	if (groupDto.Name == null)
                 return BadRequest("Name is null");
