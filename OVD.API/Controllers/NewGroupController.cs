@@ -12,16 +12,20 @@ using OVD.API.Dtos;
 
 namespace OVD.API.Controllers
 {
-    [Authorize]
-    [Route("api/{userId}/groups")]
-    public class GroupsController : ControllerBase
+    // [Authorize]
+    [Route("api/newgroups")]
+    public class NewGroupsController : ControllerBase
     {
 
         // SECTION  HTTP POST and PUT methods
 
+
+
         [HttpPost("create")] 
-        public async Task<IActionResult> CreateUserGroup(String userName, GroupForCreationDto groupForCreationDto)
+        public async Task<IActionResult> CreateUserGroup(GroupForCreationDto groupForCreationDto)
         {
+            return Ok();
+
             // check that user is admin
             // if (userId != int.Parse(Admin.FindFirst(ClaimTypes.NameIdentifier).Value))
                 // return Unauthorized();
