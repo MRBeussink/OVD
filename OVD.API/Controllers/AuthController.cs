@@ -82,7 +82,7 @@ namespace OVD.API.Controllers
             }
 
             else 
-            {   /**
+            {   
                 // Admin login
 
                 var adminFromRepo = await _repo
@@ -95,7 +95,7 @@ namespace OVD.API.Controllers
                 idClaim = new Claim(ClaimTypes.NameIdentifier, adminFromRepo.Id.ToString());
                 nameClaim = new Claim(ClaimTypes.Name, adminFromRepo.Username);
                 roleClaim = new Claim(ClaimTypes.Role, "admin");
-                */
+                
                 idClaim = new Claim(ClaimTypes.NameIdentifier, userForLoginDto.Username);
                 nameClaim = new Claim(ClaimTypes.Name, userForLoginDto.Username);
                 roleClaim = new Claim(ClaimTypes.Role, "admin");
