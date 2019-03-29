@@ -1,19 +1,6 @@
 <div class="container mt-3">
   <form class="col-md-4 h-100 justify-content-center" #editGroupForm="ngForm" (ngSubmit)="edit()">
-    <legend class="text-center">Edit Group</legend>
-    <div class="row pt-2">
-      <label for="name">Group Name</label>
-    </div>
-    <div class="row pb-2">
-      <input
-        type="text"
-        class="form-control"
-        name="name"
-        required
-        [(ngModel)]="activeGroup.name"
-        placeholder="Group Name"
-      />
-    </div>
+    <legend class="text-center">Edit {{activeGroup.name}}</legend>
     <div class="row pt-2">
       <label for="total">Total VMs</label>
       <div class="col-md-5"></div>

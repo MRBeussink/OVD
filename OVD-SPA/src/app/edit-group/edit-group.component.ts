@@ -37,7 +37,7 @@ export class EditGroupComponent implements OnInit {
   }
 
   edit() {
-    if (this.groupService.edit(this.activeGroup, this.groupService.getGroup(this.groupService.activeGroup).name)) {
+    if (this.groupService.edit(this.activeGroup)) {
       this.clearForm();
       this.router.navigate(['/groups']);
     }
