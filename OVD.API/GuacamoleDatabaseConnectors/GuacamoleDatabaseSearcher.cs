@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using OVD.API.Exceptions;
+// using OVD.API.GuacamoleDatabaseConnectors;
 
 namespace OVD.API.GuacamoleDatabaseConnectors
 {
-    public class GuacamoleDatabaseSearcher
+    public class GuacamoleDatabaseSearcher : IGuacSearcher
     {
         /// <summary>
         /// Searchs for the name of a specified group.
@@ -108,7 +108,7 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// <param name="queryString">Query string.</param>
         /// <param name="arg">Argument.</param>
         /// <param name="exceptions">Exceptions.</param>
-        public Queue<string> searchQuery(string queryString, string arg, ref List<Exception> exceptions)
+        private Queue<string> searchQuery(string queryString, string arg, ref List<Exception> exceptions)
         {
             try
             {

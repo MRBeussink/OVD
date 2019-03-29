@@ -6,7 +6,7 @@ using OVD.API.Exceptions;
 
 namespace OVD.API.GuacamoleDatabaseConnectors
 {
-    public class GuacamoleDatabaseInserter
+    public class GuacamoleDatabaseInserter : IGuacInserter
     {
         private const string MAX_USER_CONNECTIONS = "1";
 
@@ -233,7 +233,7 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// <param name="argNames">Argument names.</param>
         /// <param name="args">Arguments.</param>
         /// <param name="exceptions">Exceptions.</param>
-        public bool insertQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> exceptions)
+        private bool insertQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> exceptions)
         {
             //Validate if the arguments and names are the correct amount
             if (args.Count != argNames.Count)
