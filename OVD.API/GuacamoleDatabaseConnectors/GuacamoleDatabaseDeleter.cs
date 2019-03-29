@@ -5,7 +5,7 @@ using OVD.API.Exceptions;
 
 namespace OVD.API.GuacamoleDatabaseConnectors
 {
-    public class GuacamoleDatabaseDeleter
+    public class GuacamoleDatabaseDeleter : IGuacDeleter
     {
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// <param name="argNames">Argument names.</param>
         /// <param name="args">Arguments.</param>
         /// <param name="exceptions">Exceptions.</param>
-        public bool deleteQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> exceptions)
+        private bool deleteQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> exceptions)
         {
             //Validate if the arguments and names are the correct amount
             if (args.Count != argNames.Count)

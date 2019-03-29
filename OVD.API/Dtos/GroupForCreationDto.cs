@@ -1,15 +1,20 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace OVD.API.Dtos
 {
     public class GroupForCreationDto
     {
-        public String Name { get; set; }
-        public String VMChoice { get; set; }
-        public int MaxVms { get; set; }
-        public int MinVms { get; set; }
-        public int NumHotspares { get; set; }
-        public IList<String> Dawgtags { get; set; }
+    	[Required]
+		public string Name { get; set; }
+		[Required]
+		public string VmChoice { get; set; }
+		[Required]
+		public int MaxVms { get; set; }
+		[Required]
+		public int MinVms { get; set; }
+		[Required]
+		public int NumHotspares { get; set; }
+		[Required]
+		public string[] Dawgtags { get; set; }
     }
 }
