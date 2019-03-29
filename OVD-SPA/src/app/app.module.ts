@@ -18,6 +18,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { UserComponent } from './user/user.component';
 import { NewGroupComponent } from './new-group/new-group.component';
 import { EditGroupComponent } from './edit-group/edit-group.component';
+import { ActivityComponent } from './activity/activity.component';
 
 @NgModule({
    declarations: [
@@ -30,7 +31,8 @@ import { EditGroupComponent } from './edit-group/edit-group.component';
       SettingsComponent,
       UserComponent,
       NewGroupComponent,
-      EditGroupComponent
+      EditGroupComponent,
+      ActivityComponent
    ],
    imports: [
       BrowserModule,

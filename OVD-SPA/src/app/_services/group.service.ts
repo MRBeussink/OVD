@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
+import { ActivityService } from '../_services/activity.service';
 import { environment } from '../../environments/environment';
-import { GroupsComponent } from '../groups/groups.component';
 import { Group } from '../_models/group';
 
 @Injectable({
@@ -16,18 +16,18 @@ export class GroupService {
   groups: Group[] = [
     {
       name: 'CS499 Test Group',
-      image: 'Ubusoft',
+      image: 'Commodore 64',
       hotspares: 0,
-      total: 0,
+      total: 200,
       online: 0,
       active: 0,
       dawgtags: ['SIU853656388', 'SIU853656384', 'SIU853656366']
     },
     {
       name: 'CS410 Pen Test',
-      image: 'Ubusoft',
+      image: 'Debster',
       hotspares: 0,
-      total: 0,
+      total: 15,
       online: 0,
       active: 0,
       dawgtags: ['SIU853656388', 'SIU853656384', 'SIU853656366']
@@ -36,26 +36,29 @@ export class GroupService {
       name: 'CS434 Data Lab',
       image: 'Ubusoft',
       hotspares: 0,
-      total: 0,
+      total: 4,
       online: 0,
       active: 0,
       dawgtags: ['SIU853656388', 'SIU853656384', 'SIU853656366']
     }
   ];
 
-  constructor(private http: HttpClient, public authService: AuthService, private alertifyService: AlertifyService) {
+  constructor(private http: HttpClient, public authService: AuthService,
+              private alertifyService: AlertifyService, private activityService: ActivityService) {
     // These are hard coded samples, remove these for the final product
+    this.activityService.addMessage('Creating fake groups and adding to the group list.');
     this.groups.push(
       {
-        name: 'Just a Pop',
-        image: 'Ubusoft',
+        name: 'Basic Lab',
+        image: 'Macrosoft Winders',
         hotspares: 0,
-        total: 0,
+        total: 40,
         online: 0,
         active: 0,
         dawgtags: ['SIU853656547', 'SIU853656723', 'SIU853654577']
       }
     );
+    this.activityService.addMessage('Creating fake image list.');
     this.images = ['Ubusoft', 'Macrosoft Winders', 'Orangintosh X', 'Debster', 'Commodore 64'];
   }
 
@@ -90,9 +93,11 @@ create(model: any) {
     if (this.groupsContains(model.name)) {
       this.alertifyService.success('Group created.');
       console.log(this.groups[this.groups.length - 1]);
+      this.activityService.addMessage('Created the group "' + model.name + '".');
       return true;
   }
   this.alertifyService.error('Error creating group.');
+  this.activityService.addMessage('Failed to create group "' + model.name + '".');
   return false;
 }
 
@@ -110,25 +115,17 @@ delete(groupName: string) {
     if (groupName === this.groups[i].name) {
       this.groups.splice(i, 1);
       this.alertifyService.success('Group deleted.');
+      this.activityService.addMessage('Deleted group "' + groupName + '".');
       return true;
     }
   }
   this.alertifyService.error('Error finding group.');
+  this.activityService.addMessage('Could not delete group "' + groupName + '" because it could not be found.');
   return false;
 }
 
-edit(model: any, old: string) {
-  if (model.name !== old && this.groupsContains(model.name)) {
-    this.alertifyService.error('Group already exists.');
-    return false;
-  } else {
-    for (let i = 0; i < this.groups.length; i++) {
-      if (old === this.groups[i].name) {
-        this.groups.splice(i, 1);
-        break;
-      }
-    }
-  }
+edit(model: any) {
+  // Basic input checks before the heavy lifting
   if (model.hotspares < 0 || model.hotspares % 1 !== 0) {
     this.alertifyService.error('Hotspares should be positive and whole.');
     return false;
@@ -137,21 +134,25 @@ edit(model: any, old: string) {
     this.alertifyService.error('Total should be positive and whole.');
     return false;
   }
-  const splitDawgtags = model.dawgtags.split('\n');
-  if (this.groups.push(
-    {
-      name: model.name,
-      image: model.image,
-      hotspares: model.hotspares,
-      total: model.total,
-      online: 0,
-      active: 0,
-      dawgtags: splitDawgtags
-    })) {
+
+  // TODO: Note total being less than active/online
+
+  // Search for the group in the list
+  for (let i = 0; i < this.groups.length; i++) {
+    if (model.name === this.groups[i].name) {
+      const splitDawgtags = model.dawgtags.split('\n');
+      this.groups[i].image = model.image;
+      this.groups[i].hotspares = model.hotspares;
+      this.groups[i].total = model.total;
+      this.groups[i].dawgtags = splitDawgtags;
       this.alertifyService.success('Group edited.');
+      this.activityService.addMessage('Edited the group "' + model.name + '".');
       return true;
     }
-  this.alertifyService.error('Error editing group.');
+  }
+
+  this.alertifyService.error('Error editing group, maybe the group no longer exists?');
+  this.activityService.addMessage('Could not edit the group "' + model.name + '".');
   return false;
 }
 

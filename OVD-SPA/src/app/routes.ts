@@ -9,6 +9,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { UserComponent } from './user/user.component';
 import { NewGroupComponent } from './new-group/new-group.component';
 import { EditGroupComponent } from './edit-group/edit-group.component';
+import { ActivityComponent } from './activity/activity.component';
 
 export const appRoutes: Routes = [
     { path: '', component: UserComponent, canActivate: [AuthGuard] },
@@ -23,7 +24,8 @@ export const appRoutes: Routes = [
             { path: 'sessions', component: SessionsComponent },
             { path: 'settings', component: SettingsComponent },
             { path: 'new', component: NewGroupComponent },
-            { path: 'edit', component: EditGroupComponent }
+            { path: 'edit', component: EditGroupComponent },
+            { path: 'activity', component: ActivityComponent }
         ]
     },
     { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
