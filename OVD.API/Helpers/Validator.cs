@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using OVD.API.GuacamoleDatabaseConnectors;
-using OVD.API.Exceptions;
+
 using System.Collections.Generic;
+using GuacamoleDatabaseConnectionFacade.Exceptions;
 
 namespace OVD.API.Helpers
 {

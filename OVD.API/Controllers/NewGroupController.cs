@@ -2,14 +2,16 @@ using System;
 using System.Collections.Generic;
 using OVD.API.Models;
 using OVD.API.Helpers;
-using OVD.API.GuacamoleDatabaseConnectors;
 using OVD.API.ScriptConnectors;
-using OVD.API.Exceptions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using OVD.API.Dtos;
-using OVD.OVD.API.GuacamoleDatabaseConnectionFacade;
+using GuacamoleDatabaseConnectionFacade.Models;
+using OVD.API.GuacamoleDatabaseConnectors;
+using GuacamoleDatabaseConnectionFacade.Exceptions;
+using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
 
 namespace OVD.API.Controllers
 {
