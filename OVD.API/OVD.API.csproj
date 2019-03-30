@@ -12,6 +12,3 @@
     <PackageReference Include=".../GuacamoleDatabaseConnectionFacade/GuacamoleDatabaseConnectionFacade.csproj"/>
   </ItemGroup>
 </Project>
-
-
-../GuacamoleDatabaseConnectionFacade/GuacamoleDatabaseConnectionFacade.csproj
