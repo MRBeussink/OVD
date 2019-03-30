@@ -1,5 +1,6 @@
 ﻿using System;
-namespace OVD.API.Exceptions
+
+namespace GuacamoleDatabaseConnectionFacade.Exceptions
 {
     public class UserInitializationException : Exception
     {

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using OVD.API.Dtos;
+using OVD.OVD.API.GuacamoleDatabaseConnectionFacade;
 
 namespace OVD.API.Controllers
 {

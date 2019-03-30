@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using GuacamoleDatabaseConnectionFacade.Exceptions;
+using GuacamoleDatabaseConnectionFacade.Models;
 using MySql.Data.MySqlClient;
-using OVD.API.Models;
-using OVD.API.Exceptions;
 
 namespace OVD.API.GuacamoleDatabaseConnectors
 {

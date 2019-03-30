@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OVD.API.Models
+namespace GuacamoleDatabaseConnectionFacade.Models
 {
     public class WorkflowResult
     {

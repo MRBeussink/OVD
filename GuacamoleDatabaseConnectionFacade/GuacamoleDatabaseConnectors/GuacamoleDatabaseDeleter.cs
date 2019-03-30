@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using OVD.API.Exceptions;
 
-namespace OVD.API.GuacamoleDatabaseConnectors
+using GuacamoleDatabaseConnectionFacade.Exceptions;
+using OVD.API.GuacamoleDatabaseConnectors;
+
+namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
 {
     public class GuacamoleDatabaseDeleter
     {
