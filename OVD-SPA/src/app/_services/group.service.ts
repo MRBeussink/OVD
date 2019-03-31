@@ -4,7 +4,7 @@ import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
 import { ActivityService } from '../_services/activity.service';
 import { environment } from '../../environments/environment';
-import { Group } from '../_models/group';
+import { Group } from '../_models/Group';
 
 @Injectable({
   providedIn: 'root'

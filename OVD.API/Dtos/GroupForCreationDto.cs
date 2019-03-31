@@ -4,17 +4,17 @@ namespace OVD.API.Dtos
 {
     public class GroupForCreationDto
     {
-    	[Required]
+    [Required]
 		public string Name { get; set; }
 		[Required]
-		public string VmChoice { get; set; }
+		public string Image { get; set; }
 		[Required]
-		public int MaxVms { get; set; }
+		public int Total { get; set; }
 		[Required]
-		public int MinVms { get; set; }
+		public int Online { get; set; }
 		[Required]
-		public int NumHotspares { get; set; }
+		public int Hotspares { get; set; }
 		[Required]
-		public string[] Dawgtags { get; set; }
+		public int Active { get; set; }
     }
 }

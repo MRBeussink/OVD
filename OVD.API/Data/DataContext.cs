@@ -7,5 +7,6 @@ namespace OVD.API.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base (options) {}
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<Group> Groups { get; set; }
     }
 }

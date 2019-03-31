@@ -40,6 +40,7 @@ namespace OVD.API
                 }
             ));
             services.AddCors();
+            services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
