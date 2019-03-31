@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
 using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectorsGuacamoleDatabaseConnectors;
 using OVD.API.Dtos;
 using OVD.API.Helpers;
-// using OVD.API.GuacamoleDatabaseConnectors;
 
 namespace OVD.API.Controllers
 {
-    public class GroupController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GroupController : ControllerBase
     {
 
         private const string CONFIG_FILE_LOC = "./ConfigurationFiles/ConnectionTypes.xml";
@@ -43,21 +46,22 @@ namespace OVD.API.Controllers
         /// </summary>
         /// <param name="userId">User identifier.</param>
         /// <param name="groupName">Group name.</param>
-        public void DeleteGroup(string userId, string groupName)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteGroup(GroupNameDto groupNameDto)
         {
             List<Exception> excepts = new List<Exception>();
             GuacamoleDatabaseDeleter deleter = new GuacamoleDatabaseDeleter();
-            deleter.DeleteUserGroup(groupName, ref excepts);
-            deleter.DeleteConnectionGroup(groupName, ref excepts);
+            deleter.DeleteUserGroup(groupNameDto.Name, ref excepts);
+            deleter.DeleteConnectionGroup(groupNameDto.Name, ref excepts);
 
             if(excepts.Count == 0)
             {
-                return;
+                return Ok();
             }
             else
             {
-                Console.Write("Error");
-                return;
+                var message = HandleErrors(excepts);
+                return BadRequest(message);
             }
         }
 

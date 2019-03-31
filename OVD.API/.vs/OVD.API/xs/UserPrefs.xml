@@ -1,0 +1,18 @@
+﻿<Properties StartupConfiguration="{A64F383E-4756-46C6-8DD1-53F37183A5B7}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Dtos/GroupForCreationDto.cs">
+    <Files>
+      <File FileName="Controllers/GroupController.cs" Line="14" Column="20" />
+      <File FileName="Controllers/NewGroupController.cs" Line="23" Column="37" />
+      <File FileName="Controllers/EditGroupController.cs" Line="14" Column="29" />
+      <File FileName="Dtos/GroupForCreationDto.cs" Line="17" Column="6" />
+      <File FileName="ConfigurationFiles/ConnectionTypes.xml" Line="3" Column="25" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.OVD.API PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

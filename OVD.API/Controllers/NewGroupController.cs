@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using OVD.API.Dtos;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 // using OVD.API.GuacamoleDatabaseConnectors;
 // using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
 
@@ -8,10 +10,12 @@ using OVD.API.Helpers;
 
 namespace OVD.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class NewGroupController : GroupController
     {
-
-        public void CreateGroup(string userId, GroupForCreationDto groupForCreationDto)
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateGroup(GroupForCreationDto groupForCreationDto)
         {
             //Method Level Variable Declarations
             List<Exception> excepts = new List<Exception>();
@@ -20,28 +24,28 @@ namespace OVD.API.Controllers
             if (!FormatInput(groupForCreationDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Validate group input parameters
             if (!ValidateInputForNewGroup(groupForCreationDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Validate user input parameters
             if (!ValidateInputForUsers(groupForCreationDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Create user group
             if (!CreateUserGroup(groupForCreationDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Create users if they do not exist in the system and add them to the
@@ -59,14 +63,14 @@ namespace OVD.API.Controllers
             if (!CreateConnectionGroup(groupForCreationDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Connect the user group to the connection group
             if(!AddConnectionGroupToUserGroup(groupForCreationDto.Name, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Create the minimum desired Connections
@@ -77,8 +81,9 @@ namespace OVD.API.Controllers
             if (excepts.Count != 0)
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
+            return Ok();
         }
 
 
@@ -88,7 +93,7 @@ namespace OVD.API.Controllers
         /// <returns><c>true</c>, if input parameters for the group is valid, <c>false</c> otherwise.</returns>
         /// <param name="groupForCreationDto">Group for creation dto.</param>
         /// <param name="excepts">Excepts.</param>
-        public bool ValidateInputForNewGroup(GroupForCreationDto groupForCreationDto, ref List<Exception> excepts)
+        private bool ValidateInputForNewGroup(GroupForCreationDto groupForCreationDto, ref List<Exception> excepts)
         {
             using (Validator checker = new Validator())
             {

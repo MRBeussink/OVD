@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
 using OVD.API.Dtos;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 // using OVD.API.GuacamoleDatabaseConnectors;
 using OVD.API.Helpers;
 
 namespace OVD.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class EditGroupController : GroupController
     {
-        public void EditGroup(string userId, GroupForEditDto groupForEditDto)
+        [HttpPost("edit")]
+        public async Task<IActionResult> EditGroup(string userId, GroupForEditDto groupForEditDto)
         {
             //Method Level Variable Declarations
             List<Exception> excepts = new List<Exception>();
@@ -18,21 +23,21 @@ namespace OVD.API.Controllers
             if (!FormatInput(groupForEditDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Validate group input parameters
             if (!ValidateInputForExistingGroup(groupForEditDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Validate user input parameters
             if (!ValidateInputForUsers(groupForEditDto, ref excepts))
             {
                 var message = HandleErrors(excepts);
-                return; //BadRequest(message);
+                return BadRequest(message);
             }
 
             //Create users if they do not exist in the system and add them to the user group
@@ -50,6 +55,7 @@ namespace OVD.API.Controllers
             {
                 RemoveUserFromGroup(groupForEditDto.Name, dawgtag, ref excepts);
             }
+            return Ok();
         }
 
 
