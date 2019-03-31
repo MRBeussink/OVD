@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
+using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectorsGuacamoleDatabaseConnectors;
 using OVD.API.Dtos;
 using OVD.API.Helpers;
-using OVD.API.GuacamoleDatabaseConnectors;
+// using OVD.API.GuacamoleDatabaseConnectors;
 
 namespace OVD.API.Controllers
 {

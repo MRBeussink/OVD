@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OVD.API.GuacamoleDatabaseConnectors
+namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
 {
     public interface IGuacInserter
     {

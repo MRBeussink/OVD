@@ -2,39 +2,55 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
+using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
 
-namespace OVD.API.GuacamoleDatabaseConnectors
+namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectorsGuacamoleDatabaseConnectors
 {
-    public class GuacamoleDatabaseSearcher
+    public class GuacamoleDatabaseSearcher : IGuacSearcher
     {
         /// <summary>
-        /// Searchs for the name of a specified group.
+        /// Searchs for the name of a specified group in the connection group table.
         /// </summary>
         /// <returns><c>true</c>, if group name was found, <c>false</c> otherwise.</returns>
         /// <param name="groupName">Group name.</param>
-        public bool searchGroupName(string groupName, ref List<Exception> exceptions)
+        public bool SearchConnectionGroupName(string groupName, ref List<Exception> excepts)
         {
             const string queryString =
                 "SELECT connection_group_name FROM guacamole_connection_group " +
                 "WHERE connection_group_name=@input";
 
-            Queue<string> queryResults = searchQuery(queryString, groupName, ref exceptions);
+            Queue<string> queryResults = SearchQuery(queryString, groupName, ref excepts);
             return queryResults.Count != 0;
         }
 
+
+        /// <summary>
+        /// Searchs for the name of a specified group in the user group table.
+        /// </summary>
+        /// <returns><c>true</c>, if group name was found, <c>false</c> otherwise.</returns>
+        /// <param name="groupName">Group name.</param>
+        public bool SearchUserGroupName(string groupName, ref List<Exception> excepts)
+        {
+            const string queryString =
+                "SELECT name FROM guacamole_entity " +
+                "WHERE name=@input AND type='USER_GROUP'";
+
+            Queue<string> queryResults = SearchQuery(queryString, groupName, ref excepts);
+            return queryResults.Count != 0;
+        }
 
         /// <summary>
         /// Searchs for the dawgtag of the user.
         /// </summary>
         /// <returns><c>true</c>, if user name was found, <c>false</c> otherwise.</returns>
         /// <param name="dawgtag">Dawgtag.</param>
-        public bool searchUserName(string dawgtag, ref List<Exception> exceptions)
+        public bool SearchUserName(string dawgtag, ref List<Exception> excepts)
         {
             const string queryString =
                 "SELECT name FROM guacamole_entity " +
                 "WHERE type='USER' AND name=@input";
 
-            Queue<string> queryResults = searchQuery(queryString, dawgtag, ref exceptions);
+            Queue<string> queryResults = SearchQuery(queryString, dawgtag, ref excepts);
             return queryResults.Count != 0;
         }
 
@@ -44,27 +60,29 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if vm name was found, <c>false</c> otherwise.</returns>
         /// <param name="vmName">Vm name.</param>
-        public bool searchVmName(string vmName, ref List<Exception> exceptions)
+        public bool SearchVmName(string vmName, ref List<Exception> excepts)
         {
             const string queryString =
                 "SELECT connection_name FROM guacamole_connection " +
                  "WHERE connection_name=@input";
 
-            Queue<string> queryResults = searchQuery(queryString, vmName, ref exceptions);
+            Queue<string> queryResults = SearchQuery(queryString, vmName, ref excepts);
             return queryResults.Count != 0;
         }
 
 
         /// <summary>
-        /// Gets the vm identifier number.
+        /// Gets all group names.
         /// </summary>
-        /// <returns>The vm identifier number.</returns>
-        public int getMaxVmId(ref List<Exception> exceptions)
+        /// <returns>The all group names.</returns>
+        /// <param name="excepts">Exceptions.</param>
+        public Queue<string> GetAllGroupNames(ref List<Exception> excepts)
         {
-            const string queryString = "SELECT MAX(connection_id) FROM guacamole_connection";
+            const string queryString =
+                "SELECT connection_group_name FROM guacamole_connection_group";
 
-            Queue<string> queryResults = searchQuery(queryString, null, ref exceptions);
-            return Int32.Parse(queryResults.Dequeue());
+            Queue<string> queryResults = SearchQuery(queryString, null, ref excepts);
+            return queryResults;
         }
 
 
@@ -73,31 +91,16 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns>An ICollection<string> of all virtual machine names</returns>
         /// /// <param name="groupName">Group name.</param>
-        public Queue<string> getAllGroupVmNames(string groupName, ref List<Exception> exceptions)
+        public Queue<string> GetAllGroupVmNames(string groupName, ref List<Exception> excepts)
         {
             const string queryString =
                 "SELECT connection_name FROM guacamole_connection, guacamole_connection_group " +
                 "WHERE guacamole_connection.parent_id=guacamole_connection_group.connection_group_id " +
                 "AND guacamole_connection_group.connection_group_name=@input";
 
-            Queue<string> queryResults = searchQuery(queryString, groupName, ref exceptions);
+            Queue<string> queryResults = SearchQuery(queryString, groupName, ref excepts);
             return queryResults;
 
-        }
-
-
-        /// <summary>
-        /// Gets all group names.
-        /// </summary>
-        /// <returns>The all group names.</returns>
-        /// <param name="exceptions">Exceptions.</param>
-        public Queue<string> getAllGroupNames(ref List<Exception> exceptions)
-        {
-            const string queryString =
-                "SELECT connection_group_name FROM guacamole_connection_group";
-
-            Queue<string> queryResults = searchQuery(queryString, null, ref exceptions);
-            return queryResults;
         }
 
 
@@ -108,11 +111,13 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// <param name="queryString">Query string.</param>
         /// <param name="arg">Argument.</param>
         /// <param name="exceptions">Exceptions.</param>
-        public Queue<string> searchQuery(string queryString, string arg, ref List<Exception> exceptions)
+        private Queue<string> SearchQuery(string queryString, string arg, ref List<Exception> excepts)
         {
+            //Stores the Values found from the database
+            Queue<string> queryResults = new Queue<string>();
             try
             {
-                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
+                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref excepts))
                 {
                     using (MySqlCommand query = new MySqlCommand(queryString, gdbc.getConnection()))
                     {
@@ -125,7 +130,6 @@ namespace OVD.API.GuacamoleDatabaseConnectors
                         }
 
                         //Collect the query result column
-                        Queue<string> queryResults = new Queue<string>();
                         using (MySqlDataReader reader = query.ExecuteReader())
                         {
                             while (reader.Read())
@@ -139,8 +143,8 @@ namespace OVD.API.GuacamoleDatabaseConnectors
             }
             catch (Exception e)
             {
-                exceptions.Add(e);
-                return null;
+                excepts.Add(e);
+                return queryResults;
             }
         }
     }

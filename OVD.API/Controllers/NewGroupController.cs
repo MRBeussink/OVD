@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using OVD.API.Dtos;
-using OVD.API.GuacamoleDatabaseConnectors;
+// using OVD.API.GuacamoleDatabaseConnectors;
+// using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
+
 using OVD.API.Helpers;
 
 namespace OVD.API.Controllers
@@ -69,7 +71,7 @@ namespace OVD.API.Controllers
 
             //Create the minimum desired Connections
             //for(int i = 0; i < groupForCreationDto.MaxVms; i++)
-            {
+            //{
                 CreateConnection(groupForCreationDto, ref excepts);
             //}
             if (excepts.Count != 0)
@@ -86,7 +88,7 @@ namespace OVD.API.Controllers
         /// <returns><c>true</c>, if input parameters for the group is valid, <c>false</c> otherwise.</returns>
         /// <param name="groupForCreationDto">Group for creation dto.</param>
         /// <param name="excepts">Excepts.</param>
-        protected bool ValidateInputForNewGroup(GroupForCreationDto groupForCreationDto, ref List<Exception> excepts)
+        public bool ValidateInputForNewGroup(GroupForCreationDto groupForCreationDto, ref List<Exception> excepts)
         {
             using (Validator checker = new Validator())
             {
@@ -112,7 +114,7 @@ namespace OVD.API.Controllers
         /// <param name="excepts">Excepts.</param>
         private bool CreateUserGroup(GroupForCreationDto groupForCreationDto, ref List<Exception> excepts)
         {
-            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+            GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors.GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors.GuacamoleDatabaseInserter();
             return inserter.InsertUserGroup(groupForCreationDto.Name, ref excepts);
         }
 
@@ -125,7 +127,7 @@ namespace OVD.API.Controllers
         /// <param name="excepts">Excepts.</param>
         private bool CreateConnectionGroup(GroupForCreationDto groupForCreationDto, ref List<Exception> excepts)
         {
-            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+            GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors.GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors.GuacamoleDatabaseInserter();
             return inserter.InsertConnectionGroup(groupForCreationDto.Name, groupForCreationDto.MaxVms, ref excepts);
         }
 
@@ -138,7 +140,7 @@ namespace OVD.API.Controllers
         /// <param name="excepts">Excepts.</param>
         private bool AddConnectionGroupToUserGroup(string groupName, ref List<Exception> excepts)
         {
-            GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseInserter();
+            GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors.GuacamoleDatabaseInserter inserter = new GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors.GuacamoleDatabaseInserter();
             return inserter.InsertConnectionGroupIntoUserGroup(groupName, ref excepts);
         }
     }

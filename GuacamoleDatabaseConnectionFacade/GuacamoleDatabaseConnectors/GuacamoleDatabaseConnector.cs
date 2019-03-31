@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-namespace OVD.API.GuacamoleDatabaseConnectors
+namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
 {
     public class GuacamoleDatabaseConnector : IDisposable
     {
@@ -20,10 +20,10 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// Initializes a new instance of the
         /// <see cref="T:test_OVD_clientless.GuacamoleDatabaseConnectors.GuacamoleDatabaseConnector"/> class.
         /// </summary>
-        public GuacamoleDatabaseConnector(ref List<Exception> exceptions)
+        public GuacamoleDatabaseConnector(ref List<Exception> excepts)
         {
             initialize();
-            openConnection(ref exceptions);
+            openConnection(ref excepts);
         }
 
 
@@ -101,7 +101,7 @@ namespace OVD.API.GuacamoleDatabaseConnectors
         /// Opens a connection to the Guacamole mysql database.
         /// </summary>
         /// <returns><c>true</c>, if connection was opened, <c>false</c> otherwise.</returns>
-        private bool openConnection(ref List<Exception> exceptions)
+        private bool openConnection(ref List<Exception> excepts)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace OVD.API.GuacamoleDatabaseConnectors
             }
             catch (MySqlException e)
             {
-                exceptions.Add(e);
+                excepts.Add(e);
                 return false;
             }
         }

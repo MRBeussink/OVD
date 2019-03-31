@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 using GuacamoleDatabaseConnectionFacade.Exceptions;
-using OVD.API.GuacamoleDatabaseConnectors;
+using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors;
 
 namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
 {
-    public class GuacamoleDatabaseDeleter
+    public class GuacamoleDatabaseDeleter : IGuacDeleter
     {
 
         /// <summary>
@@ -16,8 +16,8 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if user group was deleted, <c>false</c> otherwise.</returns>
         /// <param name="groupName">Group name.</param>
-        /// <param name="exceptions">Exceptions.</param>
-        public bool deleteUserGroup(string groupName, ref List<Exception> exceptions)
+        /// <param name="excepts">Exceptions.</param>
+        public bool DeleteUserGroup(string groupName, ref List<Exception> excepts)
         {
             const string queryString =
                 "DELETE FROM guacamole_entity " +
@@ -30,14 +30,7 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
             args.Enqueue(groupName);
 
             //Insert the usergroup into the entity table
-            if (!deleteQuery(queryString, argNames, args, ref exceptions))
-            {
-                exceptions.Add(new UserInitializationException("The user group with the name (" +
-                        groupName + ") could not be deleted. Please check the status of the " +
-                        	"guacamole mysql database.\n\n"));
-                return false;
-            }
-            return true;
+            return DeleteQuery(queryString, argNames, args, ref excepts);
         }
 
 
@@ -47,8 +40,8 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
         /// </summary>
         /// <returns><c>true</c>, if connection group was deleted, <c>false</c> otherwise.</returns>
         /// <param name="groupName">Group name.</param>
-        /// <param name="exceptions">Exceptions.</param>
-        public bool deleteConnectionGroup(string groupName, ref List<Exception> exceptions)
+        /// <param name="excepts">Exceptions.</param>
+        public bool DeleteConnectionGroup(string groupName, ref List<Exception> excepts)
         {
             const string queryString =
                 "DELETE FROM guacamole_connection_group " +
@@ -61,14 +54,42 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
             args.Enqueue(groupName);
 
             //Insert the usergroup into the entity table
-            if (!deleteQuery(queryString, argNames, args, ref exceptions))
-            {
-                exceptions.Add(new UserInitializationException("The connection group with the name (" +
-                        groupName + ") could not be deleted. Please check the status of the " +
-                            "guacamole mysql database.\n\n"));
-                return false;
-            }
-            return true;
+            return DeleteQuery(queryString, argNames, args, ref excepts);
+        }
+
+
+        /// <summary>
+        /// Deletes the user from user group.
+        /// </summary>
+        /// <returns><c>true</c>, if user was deleted from the user group, <c>false</c> otherwise.</returns>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="dawgtag">Dawgtag.</param>
+        /// <param name="excepts">Excepts.</param>
+        public bool DeleteUserFromUserGroup(string groupName, string dawgtag, ref List<Exception> excepts)
+        {
+            const string groupIdQueryString =
+                "(SELECT user_group_id FROM guacamole_user_group, guacamole_entity " +
+                "WHERE name = @groupname AND type = 'USER_GROUP' " +
+                "AND guacamole_user_group.entity_id=guacamole_entity.entity_id)";
+
+            const string userIdQueryString =
+                "(SELECT entity_id FROM guacamole_entity " +
+                "WHERE name = @username AND type = 'USER')";
+
+            const string memberQueryString =
+                "DELETE FROM guacamole_user_group_member " +
+                "WHERE user_group_id=" + groupIdQueryString + "AND member_entity_id =" + userIdQueryString;
+
+            Queue<string> argNames = new Queue<string>();
+            argNames.Enqueue("@groupname");
+            argNames.Enqueue("@username");
+
+            Queue<string> args = new Queue<string>();
+            args.Enqueue(groupName);
+            args.Enqueue(dawgtag);
+
+            //Insert the user into the entity table
+            return DeleteQuery(memberQueryString, argNames, args, ref excepts);
         }
 
 
@@ -79,14 +100,15 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
         /// <param name="queryString">Query string.</param>
         /// <param name="argNames">Argument names.</param>
         /// <param name="args">Arguments.</param>
-        /// <param name="exceptions">Exceptions.</param>
-        public bool deleteQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> exceptions)
+        /// <param name="excepts">Exceptions.</param>
+        private bool DeleteQuery(string queryString, Queue<string> argNames, Queue<string> args, ref List<Exception> excepts)
         {
+            const string exceptMessage = "The database arguments and argument names are not the same size.";
+
             //Validate if the arguments and names are the correct amount
             if (args.Count != argNames.Count)
             {
-                exceptions.Add(new InvalidDatabaseArgumentException("The database arguments and argument names " +
-                    "do not match. Ensure that the query is sending the proper arguments.\n\n"));
+                excepts.Add(new GuacamoleDatabaseException(exceptMessage));
                 return false;
             }
 
@@ -96,7 +118,7 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
 
             try
             {
-                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref exceptions))
+                using (GuacamoleDatabaseConnector gdbc = new GuacamoleDatabaseConnector(ref excepts))
                 {
                     using (MySqlCommand query = new MySqlCommand(queryString, gdbc.getConnection()))
                     {
@@ -105,7 +127,6 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
                         //Add the agrument names and values NOTE: ORDER MATTERS
                         while (copiedArgs.Count > 0 && copiedArgNames.Count > 0)
                         {
-                            Console.Error.Write("Name = " + copiedArgNames.Peek() + " Arg = " + copiedArgs.Peek() + ".\n\n");
                             query.Parameters.AddWithValue(copiedArgNames.Dequeue(), copiedArgs.Dequeue());
                         }
                         return (query.ExecuteNonQuery() > 0);
@@ -114,7 +135,7 @@ namespace GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectors
             }
             catch (Exception e)
             {
-                exceptions.Add(e);
+                excepts.Add(e);
                 return false;
             }
         }

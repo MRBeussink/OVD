@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using OVD.API.GuacamoleDatabaseConnectors;
-using OVD.API.Exceptions;
+// using OVD.API.GuacamoleDatabaseConnectors;
+// using OVD.API.Exceptions;
 using System.Collections.Generic;
 using System.Xml;
+using GuacamoleDatabaseConnectionFacade.GuacamoleDatabaseConnectorsGuacamoleDatabaseConnectors;
+using GuacamoleDatabaseConnectionFacade.Exceptions;
 
 namespace OVD.API.Helpers
 {
