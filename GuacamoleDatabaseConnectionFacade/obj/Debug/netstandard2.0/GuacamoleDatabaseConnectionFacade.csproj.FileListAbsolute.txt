@@ -1,0 +1,9 @@
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/obj/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.csprojAssemblyReference.cache
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/obj/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.csproj.CoreCompileInputs.cache
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/obj/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.AssemblyInfoInputs.cache
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/obj/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.AssemblyInfo.cs
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/bin/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.deps.json
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/bin/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.dll
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/bin/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.pdb
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/obj/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.dll
+/Users/markbeussink/Action/OVD/GuacamoleDatabaseConnectionFacade/obj/Debug/netstandard2.0/GuacamoleDatabaseConnectionFacade.pdb
