@@ -4,13 +4,12 @@ using System.Text.RegularExpressions;
 using OVD.API.GuacamoleDatabaseConnectors;
 using OVD.API.Exceptions;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace OVD.API.Helpers
 {
     public class Validator : IDisposable
     {
-
-        private const string VM_STORAGE_DIRECTORY = "/home/amcowden97/VirtualBox VMs/";
         private bool isDisposed = false;
 
 
@@ -61,15 +60,110 @@ namespace OVD.API.Helpers
         /*******************************************************************************
          *------------------------Primary Validator Methods----------------------------*
          ******************************************************************************/
-        /// <summary> 
-        /// Checks if the provided integer is greater than or equal to zero.
-        /// This is used for validating user integer input. 
+        /// <summary>
+        /// Validates the name of the group by checking if the given name exists within
+        /// the guacamole database.
         /// </summary>
-        /// <returns><c>true</c>, if input number was validated, <c>false</c> otherwise.</returns>
-        /// <param name="number">The integer to validate.</param>
-        public bool checkPositiveInputNumber(int number) 
+        /// <param name="groupName">Group name.</param>
+        public bool ValidateNewGroupName(string groupName, ref List<Exception> exceptions)
         {
-            return (number >= 0);
+            string execptMessage = $"The given group name {groupName} already " +
+                "exists. Please choose another name or edit the existing group.";
+
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+            if (searcher.SearchConnectionGroupName(groupName, ref exceptions))
+            {
+                exceptions.Add(new ValidationException(execptMessage));
+                return false;
+            }
+            if (searcher.SearchUserGroupName(groupName, ref exceptions))
+            {
+                exceptions.Add(new ValidationException(execptMessage));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Validates the existing name of a group.
+        /// </summary>
+        /// <returns><c>true</c>, if new group name was validated, <c>false</c> otherwise.</returns>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool ValidateExistingGroupName(string groupName, ref List<Exception> exceptions)
+        {
+            string execptMessage = $"The given group name {groupName} does not exist.";
+
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+            if (!searcher.SearchConnectionGroupName(groupName, ref exceptions))
+            {
+                exceptions.Add(new ValidationException(execptMessage));
+                return false;
+            }
+            if (!searcher.SearchUserGroupName(groupName, ref exceptions))
+            {
+                exceptions.Add(new ValidationException(execptMessage));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Validates if vm type exists within the given configuration file.
+        /// </summary>
+        /// <param name="vmChoice">Vm choice.</param>
+        public bool ValidateConnectionType(string vmChoice, ref List<Exception> exceptions)
+        {
+            const string CONFIG_FILE_LOC = "./ConfigurationFiles/ConnectionTypes.xml";
+            string exceptMessage = $"The given connection type {vmChoice} is not " +
+                "an acceptable connection type.";
+
+            //Read in the xml connection type configuration file
+            XmlDocument config = new XmlDocument();
+            config.Load(CONFIG_FILE_LOC);
+
+            XmlNodeList nodes = config.SelectNodes("//connection[@name='" + vmChoice + "']");
+            if(nodes.Count == 0)
+            {
+                exceptions.Add(new ValidationException(exceptMessage));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Validates if the protocol is supported for the given connection type.
+        /// </summary>
+        /// <returns><c>true</c>, if protocol was validated, <c>false</c> otherwise.</returns>
+        /// <param name="vmChoice">Vm choice.</param>
+        /// <param name="protocol">Protocol.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool ValidateProtocol(string vmChoice, string protocol, ref List<Exception> exceptions)
+        {
+            const string CONFIG_FILE_LOC = "./ConfigurationFiles/ConnectionTypes.xml";
+            string exceptMessage = $"The given protocol {protocol} is not available for " +
+                "the conneciton type {vmChoice}.";
+
+            //Read in the xml connection type configuration file
+            XmlDocument config = new XmlDocument();
+            config.Load(CONFIG_FILE_LOC);
+
+            XmlNodeList nodes = config.SelectNodes("//connection[@name='" + vmChoice + "']");
+            foreach (XmlNode node in nodes)
+            {
+                foreach(XmlNode childNode in node.ChildNodes)
+                {
+                    if ("supported-protocol".Equals(childNode.Name))
+                    {
+                        return (protocol.Equals(childNode.InnerText));
+                    }
+                }
+            }
+            exceptions.Add(new ValidationException(exceptMessage));
+            return false;
         }
 
 
@@ -77,13 +171,14 @@ namespace OVD.API.Helpers
         /// Validates the minimum vm number provided.
         /// </summary>
         /// <param name="min">Minimum.</param>
-        public bool validateMin(int min, ref List<Exception> exceptions)
+        public bool ValidateMin(int min, ref List<Exception> exceptions)
         {
-            if (!checkPositiveInputNumber(min))
+            const string exceptMessage = "The minimum number of connections given " +
+                "must be greater than or equal to zero.";
+
+            if (!CheckPositiveInputNumber(min))
             {
-                exceptions.Add(new InvalidUserArgumentException("The minimum vm number has" +
-                    " an invalid input of (" + min + "). Please enter an integer that" +
-                	" is greater than or equal to zero.\n\n"));
+                exceptions.Add(new ValidationException(exceptMessage));
                 return false;
             }
             return true;
@@ -94,13 +189,13 @@ namespace OVD.API.Helpers
         /// Validates the maximum vm number provided.
         /// </summary>
         /// <param name="max">Maximum.</param>
-        public bool validateMax(int max, ref List<Exception> exceptions)
+        public bool ValidateMax(int max, ref List<Exception> exceptions)
         {
-            if (!checkPositiveInputNumber(max))
+            const string exceptMessage = "The maximum number of connections given " +
+                "must be greater than or equal to zero.";
+            if (!CheckPositiveInputNumber(max))
             {
-                exceptions.Add(new InvalidUserArgumentException("The maximum vm number has" +
-                    " an invlaid input of (" + max + "). Please enter an integer that" +
-                    " is greater than or equal to zero.\n\n"));
+                exceptions.Add(new ValidationException(exceptMessage));
                 return false;
             }
             return true;
@@ -108,17 +203,55 @@ namespace OVD.API.Helpers
 
 
         /// <summary>
-        /// Validates that the minimum vm value is less than the maximum.
+        /// Validates the cpu input parameter.
+        /// </summary>
+        /// <returns><c>true</c>, if cpu was validated, <c>false</c> otherwise.</returns>
+        /// <param name="cpu">Cpu.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool ValidateCpu(int cpu, ref List<Exception> exceptions)
+        {
+            const string exceptMessage = "The specified cpu amount given " +
+                "must be greater than or equal to zero.";
+            if (!CheckPositiveInputNumber(cpu))
+            {
+                exceptions.Add(new ValidationException(exceptMessage));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Validates the memory input parameter.
+        /// </summary>
+        /// <returns><c>true</c>, if memory was validated, <c>false</c> otherwise.</returns>
+        /// <param name="ram">Ram.</param>
+        /// <param name="exceptions">Exceptions.</param>
+        public bool ValidateMemory(int ram, ref List<Exception> exceptions)
+        {
+            const string exceptMessage = "The specified memory amount given " +
+                "must be greater than or equal to zero.";
+            if (!CheckPositiveInputNumber(ram))
+            {
+                exceptions.Add(new ValidationException(exceptMessage));
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Validates that the minimum vm value is less than or equal to the maximum.
         /// </summary>
         /// <param name="min">Minimum.</param>
         /// <param name="max">Max.</param>
-        public bool validateMinMax(int min, int max, ref List<Exception> exceptions)
+        public bool ValidateMinMax(int min, int max, ref List<Exception> exceptions)
         {
+            const string exceptMessage = "The minimum number of connections must be " +
+                "less than the maximum number of connections.";
             if (min > max)
             {
-                exceptions.Add(new InvalidUserArgumentException("The minimum vm number given (" +
-                    min + ") is invalid as it is larger than the maximum vm number (" +
-                    max + "). Please enter a minimum vm number smaller or equal to the maximum number.\n\n"));
+                exceptions.Add(new ValidationException(exceptMessage));
                 return false;
             }
             return true;
@@ -129,68 +262,14 @@ namespace OVD.API.Helpers
         /// Validates the hotspare number provided.
         /// </summary>
         /// <param name="hotspareNumber">Hotspare number.</param>
-        public bool validateHotspares(int hotspareNumber, ref List<Exception> exceptions)
+        public bool ValidateHotspares(int hotspareNumber, ref List<Exception> exceptions)
         {
-            if (!checkPositiveInputNumber(hotspareNumber))
+            const string exceptMessage = "The number of hotspares provided must be " +
+                "greater than or equal to zero.";
+
+            if (!CheckPositiveInputNumber(hotspareNumber))
             {
-                exceptions.Add(new InvalidUserArgumentException("The number of hotspares" +
-                    " that was provided (" + hotspareNumber + ") must be greater than" +
-                    " or equal to zero.\n\n"));
-                return false;
-            }
-            return true;
-        }
-
-
-        /// <summary>
-        /// Validates the name of the group by checking if the given name exists.
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        public bool validateGroupName(string groupName, ref List<Exception> exceptions)
-        {
-            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
-            if (searcher.searchGroupName(groupName, ref exceptions))
-            {
-                exceptions.Add(new InvalidUserArgumentException("The provided group name (" +
-                    groupName + ") is already being used. Please select another group name" + 
-                    " or remove the existing group.\n\n" ));
-                return false;
-            }
-            return true;
-        }
-
-
-        /// <summary>
-        /// Validates the name of the vm by checking if the given name exists.
-        /// </summary>
-        /// <returns><c>true</c>, if vm name was validated, <c>false</c> otherwise.</returns>
-        /// <param name="vmName">Vm name.</param>
-        /// <param name="exceptions">Exceptions.</param>
-        public bool validateVmName(string vmName, ref List<Exception> exceptions)
-        {
-            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
-            if (searcher.searchVmName(vmName, ref exceptions))
-            {
-                exceptions.Add(new VmInitializationException("The provided vm name (" +
-                    vmName + ") is already being used. Please select another vm name.\n\n"));
-                return false;
-            }
-            return true;
-        }
-
-
-        /// <summary>
-        /// Validates if vm choice exists.
-        /// </summary>
-        /// <param name="vmChoice">Vm choice.</param>
-        public bool validateVmChoice(string vmChoice, ref List<Exception> exceptions)
-        {
-            if (!Directory.Exists(VM_STORAGE_DIRECTORY + vmChoice))
-            {
-                exceptions.Add(new InvalidUserArgumentException("The provided virtual machine" +
-                    " choice (" + vmChoice + ") is not a valid option. Please choose another" +
-                    " virtual machine choice or manually add the desired virtual machine to the" +
-                    " boxes table in the Entity Framework database.\n\n"));
+                exceptions.Add(new ValidationException(exceptMessage));
                 return false;
             }
             return true;
@@ -201,18 +280,31 @@ namespace OVD.API.Helpers
         /// Ensures that the dawgtag given is in the proper format.
         /// </summary>
         /// <param name="dawgtag">Dawgtag.</param>
-        public bool validateDawgtag(string dawgtag, ref List<Exception> exceptions)
+        public bool ValidateDawgtag(string dawgtag, ref List<Exception> exceptions)
         {
+            string exceptMessage = $"The given dawgtag {dawgtag} is not in the proper " +
+                "format.";
+
             //Ensure dawg tag is in the proper format
             Regex regex = new Regex(@"siu85\d{7}\z", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (!regex.Match(dawgtag).Success)
             {
-                exceptions.Add(new InvalidUserArgumentException("The provided dawgtag " + dawgtag +
-                    " is not a valid dawgtag entry. Please provide a username with the following" +
-                    " format: siu85XXXXXXX Ignored Case.\n\n"));
+                exceptions.Add(new ValidationException(exceptMessage));
                 return false;
             }
             return true;
+        }
+
+
+        /// <summary> 
+        /// Checks if the provided integer is greater than or equal to zero.
+        /// This is used for validating user integer input. 
+        /// </summary>
+        /// <returns><c>true</c>, if input number was validated, <c>false</c> otherwise.</returns>
+        /// <param name="number">The integer to validate.</param>
+        private bool CheckPositiveInputNumber(int number)
+        {
+            return (number >= 0);
         }
     }
 }

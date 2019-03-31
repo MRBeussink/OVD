@@ -56,42 +56,29 @@ namespace OVD.API.Helpers
          *------------------------Primary Formatter Methods----------------------------*
          ******************************************************************************/
         /// <summary>
-        /// Formats the name of the vm ensuring it is not taken.
-        /// </summary>
-        /// <returns>The vm name.</returns>
-        /// <param name="vmName">The desired vm name based off of the group name.</param>
-        public string formatVmName(String vmName, ref List<Exception> exceptions)
-        {
-            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
-            int vmId = searcher.getMaxVmId(ref exceptions) + 1;
-            return formatName(vmName + "_" + vmId);
-        }
-
-
-        /// <summary>
         /// Formats the name of the group.
         /// </summary>
         /// <returns>The group name.</returns>
         /// <param name="groupName">The newly formatted group name.</param>
-        public string formatGroupName(string groupName)
+        public string FormatGroupName(string groupName)
         {
-            return formatName(groupName);
+            return FormatName(groupName);
         }
 
 
         /// <summary>
-        /// General formatting pattern for renaming text.
+        /// Formats the dawgtags found within the given list.
         /// </summary>
-        /// <returns>The newly reformatted name.</returns>
-        /// <param name="name">The input name.</param>
-        public string formatName(string name)
+        /// <returns>The newly formatted dawgtag list.</returns>
+        /// <param name="dawgtags">Dawgtags.</param>
+        public IList<string> FormatDawgtagList(IList<string> dawgtags)
         {
-            //Format the name to be similar to the following...
-            //EX. cs306_linux_unix_virtual_machine
-            name = name.ToLower();
-            name = name.Replace(' ', '_');
-            name = name.Replace('-', '_');
-            return name;
+            IList<string> formattedDawgtags = new List<string>();
+            foreach(string dawgtag in dawgtags)
+            {
+                formattedDawgtags.Add(FormatDawgtag(dawgtag));
+            }
+            return formattedDawgtags;
         }
 
 
@@ -100,9 +87,42 @@ namespace OVD.API.Helpers
         /// </summary>
         /// <returns>The newly reformatted dawgtag.</returns>
         /// <param name="dawgtag">Dawgtag.</param>
-        public string formatUserName(string dawgtag)
+        public string FormatDawgtag(string dawgtag)
         {
             return dawgtag.ToLower();
+        }
+
+
+        /// <summary>
+        /// Formats the name of the vm ensuring it is not taken.
+        /// </summary>
+        /// <returns>The vm name.</returns>
+        /// <param name="vmName">The desired vm name based off of the group name.</param>
+        public string FormatVmName(String vmName, ref List<Exception> excepts)
+        {
+            GuacamoleDatabaseSearcher searcher = new GuacamoleDatabaseSearcher();
+            int vmId = 1;
+            if(vmId != -1)
+            {
+                return FormatName(vmName + "_" + vmId);
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// General formatting pattern for renaming text.
+        /// </summary>
+        /// <returns>The newly reformatted name.</returns>
+        /// <param name="name">The input name.</param>
+        public string FormatName(string name)
+        {
+            //Format the name to be similar to the following...
+            //EX. cs306_linux_unix_virtual_machine
+            name = name.ToLower();
+            name = name.Replace(' ', '_');
+            name = name.Replace('-', '_');
+            return name;
         }
     }
 }

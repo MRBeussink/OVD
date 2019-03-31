@@ -9,6 +9,7 @@ namespace OVD.API.ScriptConnectors
         private const string START_VMS_SCRIPT_LOCATION = "./Scripts/start_virtual_box_vm.sh";
         private const string STOP_VMS_SCRIPT_LOCATION = "./Scripts/stop_virtual_box_vm.sh";
         private const string CLONE_VMS_SCRIPT_LOCATION = "./Scripts/clone_virtual_box_vm.sh";
+        private const string VAGRANT_SCRIPT = "./Scripts/start_vagrant.sh";
 
 
         /// <summary>
@@ -44,6 +45,12 @@ namespace OVD.API.ScriptConnectors
         }
 
 
+        public string executeVagrant(string argumentString)
+        {
+            return executeScript(VAGRANT_SCRIPT, null);
+        }
+
+
         /// <summary>
         /// Executes an arbitrary script based off of the script location and any
         /// desired arguments. A new process is created for every new script and is
@@ -75,6 +82,7 @@ namespace OVD.API.ScriptConnectors
                 standardErrorOutput = p.StandardOutput.ReadToEnd();
                 p.WaitForExit();
 
+                Console.Write(standardErrorOutput);
                 return standardErrorOutput;
 
             }
