@@ -1,0 +1,14 @@
+﻿using System;
+using test_OVD_clientless.Validation;
+
+namespace test_OVD_clientless
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Group_Validation validator =  new Group_Validation();
+	        Console.WriteLine(validator.validateInputNumber(-1));
+        }
+    }
+}

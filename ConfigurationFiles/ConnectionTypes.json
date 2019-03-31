@@ -1,0 +1,10 @@
+﻿using System;
+namespace test_OVD_clientless.ConfigurationFiles
+{
+	public class ConnectionTypes
+	{
+		public ConnectionTypes()
+		{
+		}
+	}
+}

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<connection-configuration>
+  <lowest-ip>10.100.195.3</lowest-ip>
+  <highest-ip>10.100.195.100</highest-ip>
+  <current-ip>10.100.195.3</current-ip>
+</connection-configuration>
