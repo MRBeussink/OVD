@@ -28,7 +28,7 @@ namespace OVD.API.Data
                     return true;
                 }
 
-                catch (LdapException e)
+                catch (LdapException)
                 {
                     return false;
                 }
