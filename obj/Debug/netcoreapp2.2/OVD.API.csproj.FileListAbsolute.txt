@@ -1,3 +1,0 @@
-/home/amcowden97/primary_ovd/obj/Debug/netcoreapp2.2/OVD.API.csproj.CoreCompileInputs.cache
-/home/amcowden97/primary_ovd/obj/Debug/netcoreapp2.2/OVD.API.AssemblyInfoInputs.cache
-/home/amcowden97/primary_ovd/obj/Debug/netcoreapp2.2/OVD.API.AssemblyInfo.cs
